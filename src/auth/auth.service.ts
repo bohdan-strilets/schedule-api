@@ -1,9 +1,14 @@
-import { ConflictException, Injectable } from '@nestjs/common'
+import {
+	BadRequestException,
+	ConflictException,
+	Injectable,
+} from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ModelType } from '@typegoose/typegoose/lib/types'
-import { genSalt, hash } from 'bcryptjs'
+import { compare, genSalt, hash } from 'bcryptjs'
 import { InjectModel } from 'nestjs-typegoose'
 import { UserModel } from 'src/user/models/user.model'
+import { LoginDto } from './dto/login.dto'
 import { RegistrationDto } from './dto/registration.dto'
 
 @Injectable()
@@ -40,6 +45,18 @@ export class AuthService {
 		}
 	}
 
+	async login(dto: LoginDto) {
+		const { email, password } = dto
+		const user = await this.validateUser(email, password)
+
+		const tokens = await this.createTokenPair(String(user._id))
+
+		return {
+			user: this.returnUserFields(user),
+			tokens,
+		}
+	}
+
 	async createTokenPair(userId: string) {
 		const data = { _id: userId }
 
@@ -62,5 +79,22 @@ export class AuthService {
 			email: user.email,
 			isActivated: user.isActivated,
 		}
+	}
+
+	async findByEmail(email: string) {
+		return this.UserModel.findOne({ email }).exec()
+	}
+
+	async validateUser(email: string, password: string) {
+		const user = await this.findByEmail(email)
+		if (!user) throw new BadRequestException('Email is wrong')
+
+		const isValidPassword = await compare(password, user.password)
+		if (!isValidPassword) throw new BadRequestException('Password is wrong')
+
+		if (!user.isActivated)
+			throw new BadRequestException('Email is not activated')
+
+		return user
 	}
 }
