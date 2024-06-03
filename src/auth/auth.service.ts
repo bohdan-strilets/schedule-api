@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { compare, genSalt, hash } from 'bcryptjs'
 import { InjectModel } from 'nestjs-typegoose'
+import { SendgridService } from 'src/sendgrid/sendgrid.service'
 import { UserModel } from 'src/user/models/user.model'
 import { v4 } from 'uuid'
 import { LoginDto } from './dto/login.dto'
@@ -18,7 +19,8 @@ import { RegistrationDto } from './dto/registration.dto'
 export class AuthService {
 	constructor(
 		@InjectModel(UserModel) private readonly UserModel: ModelType<UserModel>,
-		private readonly jwtService: JwtService
+		private readonly jwtService: JwtService,
+		private readonly sendgridService: SendgridService
 	) {}
 
 	async registration(dto: RegistrationDto) {
@@ -41,6 +43,11 @@ export class AuthService {
 			activationToken,
 			password: hashPassword,
 		})
+
+		await this.sendgridService.sendConfirmEmailLetter(
+			createdUser.email,
+			createdUser.activationToken
+		)
 
 		const tokens = await this.createTokenPair(String(createdUser._id))
 

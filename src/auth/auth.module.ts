@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { TypegooseModule } from 'nestjs-typegoose'
 import { getJWTConfig } from 'src/config/jwt.config'
+import { SendgridModule } from 'src/sendgrid/sendgrid.module'
 import { UserModel } from 'src/user/models/user.model'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
@@ -23,6 +24,7 @@ import { AuthService } from './auth.service'
 			inject: [ConfigService],
 			useFactory: getJWTConfig,
 		}),
+		SendgridModule,
 	],
 	controllers: [AuthController],
 	providers: [AuthService],

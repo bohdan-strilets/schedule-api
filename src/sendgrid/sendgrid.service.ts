@@ -40,7 +40,7 @@ export class SendgridService {
 		email: string,
 		activationToken: string
 	): Promise<void> {
-		const templatePath = join(this.rootPath, 'activation-email.hbs')
+		const templatePath = join(this.rootPath, 'activation-email.template.hbs')
 		const variables = { API_URL: process.env.API_URL, activationToken }
 		const htmlContent = this.renderTemplate(templatePath, variables)
 
