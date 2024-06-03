@@ -9,6 +9,7 @@ import { ModelType } from '@typegoose/typegoose/lib/types'
 import { compare, genSalt, hash } from 'bcryptjs'
 import { InjectModel } from 'nestjs-typegoose'
 import { UserModel } from 'src/user/models/user.model'
+import { v4 } from 'uuid'
 import { LoginDto } from './dto/login.dto'
 import { RefreshTokenDto } from './dto/refresh-token.dto'
 import { RegistrationDto } from './dto/registration.dto'
@@ -31,11 +32,13 @@ export class AuthService {
 
 		const salt = await genSalt(10)
 		const hashPassword = await hash(password, salt)
+		const activationToken = v4()
 
 		const createdUser = await this.UserModel.create({
 			firstName,
 			lastName,
 			email,
+			activationToken,
 			password: hashPassword,
 		})
 
