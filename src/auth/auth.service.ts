@@ -35,7 +35,7 @@ export class AuthService {
 		const tokens = await this.createTokenPair(String(createdUser._id))
 
 		return {
-			user: createdUser,
+			user: this.returnUserFields(createdUser),
 			tokens,
 		}
 	}
@@ -52,5 +52,15 @@ export class AuthService {
 		})
 
 		return { refreshToken, accessToken }
+	}
+
+	returnUserFields(user: UserModel) {
+		return {
+			_id: user._id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			email: user.email,
+			isActivated: user.isActivated,
+		}
 	}
 }
