@@ -13,7 +13,6 @@ import { UserModule } from './user/user.module'
 			inject: [ConfigService],
 			useFactory: getMongoConfig,
 		}),
-		,
 		AuthModule,
 		UserModule,
 	],
