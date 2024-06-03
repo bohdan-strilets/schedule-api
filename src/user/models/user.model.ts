@@ -53,5 +53,5 @@ export class UserModel extends TimeStamps {
 	company: CompanyModel
 
 	@prop()
-	Vacation: VacationModel
+	vacation: VacationModel
 }
