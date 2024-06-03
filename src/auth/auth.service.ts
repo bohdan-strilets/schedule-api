@@ -2,6 +2,7 @@ import {
 	BadRequestException,
 	ConflictException,
 	Injectable,
+	UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ModelType } from '@typegoose/typegoose/lib/types'
@@ -9,6 +10,7 @@ import { compare, genSalt, hash } from 'bcryptjs'
 import { InjectModel } from 'nestjs-typegoose'
 import { UserModel } from 'src/user/models/user.model'
 import { LoginDto } from './dto/login.dto'
+import { RefreshTokenDto } from './dto/refresh-token.dto'
 import { RegistrationDto } from './dto/registration.dto'
 
 @Injectable()
@@ -48,7 +50,24 @@ export class AuthService {
 	async login(dto: LoginDto) {
 		const { email, password } = dto
 		const user = await this.validateUser(email, password)
+		const tokens = await this.createTokenPair(String(user._id))
 
+		return {
+			user: this.returnUserFields(user),
+			tokens,
+		}
+	}
+
+	async refreshToken(dto: RefreshTokenDto) {
+		const { refreshToken } = dto
+		if (!refreshToken) throw new UnauthorizedException('Please sign in')
+
+		const checkedToken = await this.jwtService.verifyAsync(refreshToken)
+
+		if (!checkedToken)
+			throw new UnauthorizedException('Invalid token or expired')
+
+		const user = await this.UserModel.findById(checkedToken._id)
 		const tokens = await this.createTokenPair(String(user._id))
 
 		return {
