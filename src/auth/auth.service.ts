@@ -32,9 +32,25 @@ export class AuthService {
 			password: hashPassword,
 		})
 
+		const tokens = await this.createTokenPair(String(createdUser._id))
+
 		return {
 			user: createdUser,
-			tokens: { accT: '', refT: '' },
+			tokens,
 		}
+	}
+
+	async createTokenPair(userId: string) {
+		const data = { _id: userId }
+
+		const refreshToken = await this.jwtService.signAsync(data, {
+			expiresIn: '15d',
+		})
+
+		const accessToken = await this.jwtService.signAsync(data, {
+			expiresIn: '1h',
+		})
+
+		return { refreshToken, accessToken }
 	}
 }
