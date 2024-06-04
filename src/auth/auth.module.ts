@@ -7,6 +7,7 @@ import { SendgridModule } from 'src/sendgrid/sendgrid.module'
 import { UserModel } from 'src/user/models/user.model'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
+import { JwtStrategy } from './strategies/jwt.strategy'
 
 @Module({
 	imports: [
@@ -27,6 +28,6 @@ import { AuthService } from './auth.service'
 		SendgridModule,
 	],
 	controllers: [AuthController],
-	providers: [AuthService],
+	providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}
