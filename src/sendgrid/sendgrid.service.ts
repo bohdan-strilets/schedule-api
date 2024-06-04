@@ -52,4 +52,18 @@ export class SendgridService {
 
 		await this.sendEmail(mail)
 	}
+
+	async sendPasswordResetEmail(email: string): Promise<void> {
+		const templatePath = join(this.rootPath, 'reset-password.template.hbs')
+		const variables = { CLIENT_URL: process.env.CLIENT_URL }
+		const htmlContent = this.renderTemplate(templatePath, variables)
+
+		const mail = {
+			to: email,
+			subject: 'Password Reset Instructions.',
+			html: htmlContent,
+		}
+
+		await this.sendEmail(mail)
+	}
 }
