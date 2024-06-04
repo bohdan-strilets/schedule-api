@@ -8,6 +8,9 @@ import { JwtService } from '@nestjs/jwt'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { compare, genSalt, hash } from 'bcryptjs'
 import { InjectModel } from 'nestjs-typegoose'
+import { CompanyLogoUrl } from 'src/common/vars/company-logo'
+import { DefaultAvatarUrl } from 'src/common/vars/default-avatar'
+import { DefaultPosterUrl } from 'src/common/vars/default-poster'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
 import { UserModel } from 'src/user/models/user.model'
 import { v4 } from 'uuid'
@@ -42,6 +45,9 @@ export class AuthService {
 			email,
 			activationToken,
 			password: hashPassword,
+			avatarUrl: DefaultAvatarUrl,
+			posterUrl: DefaultPosterUrl,
+			company: { logoUrl: CompanyLogoUrl },
 		})
 
 		await this.sendgridService.sendConfirmEmailLetter(
