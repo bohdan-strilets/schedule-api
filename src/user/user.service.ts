@@ -26,19 +26,23 @@ export class UserService {
 
 	async requestRepeatActivationEmail(dto: EmailDto) {
 		const user = await this.UserModel.findOne({ email: dto.email })
+		const activationToken = v4()
 
 		if (!user) throw new NotFoundException('User with current email not found')
 
-		const activationToken = v4()
-		await this.sendgridService.sendConfirmEmailLetter(
-			user.email,
-			user.activationToken
+		const updatedUser = await this.UserModel.findByIdAndUpdate(
+			user._id,
+			{
+				isActivated: false,
+				activationToken,
+			},
+			{ new: true }
 		)
 
-		await this.UserModel.findByIdAndUpdate(user._id, {
-			isActivated: false,
-			activationToken,
-		})
+		await this.sendgridService.sendConfirmEmailLetter(
+			updatedUser.email,
+			updatedUser.activationToken
+		)
 
 		return
 	}
