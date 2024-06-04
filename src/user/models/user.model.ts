@@ -50,7 +50,7 @@ export class UserModel extends TimeStamps {
 	isActivated: boolean
 
 	@prop()
-	company: CompanyModel
+	company: CompanyModel[]
 
 	@prop()
 	vacation: VacationModel
