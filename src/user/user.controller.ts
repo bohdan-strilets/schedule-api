@@ -12,6 +12,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator'
 import { User } from './decorators/user.decorator'
 import { ChangeProfileDto } from './dto/change-profile.dto'
 import { EmailDto } from './dto/email.dto'
+import { ResetPasswordDto } from './dto/reset-password.dto'
 import { UserService } from './user.service'
 
 @Controller('user')
@@ -45,5 +46,11 @@ export class UserController {
 	@Post('request-reset-password')
 	async requestResetPassword(@Body() dto: EmailDto) {
 		return await this.userService.requestResetPassword(dto)
+	}
+
+	@HttpCode(HttpStatus.OK)
+	@Post('reset-password')
+	async resetPassword(@Body() dto: ResetPasswordDto) {
+		return await this.userService.resetPassword(dto)
 	}
 }

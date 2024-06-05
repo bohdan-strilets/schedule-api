@@ -4,11 +4,13 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
+import { genSalt, hash } from 'bcryptjs'
 import { InjectModel } from 'nestjs-typegoose'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
 import { v4 } from 'uuid'
 import { ChangeProfileDto } from './dto/change-profile.dto'
 import { EmailDto } from './dto/email.dto'
+import { ResetPasswordDto } from './dto/reset-password.dto'
 import { UserModel } from './models/user.model'
 
 @Injectable()
@@ -86,6 +88,19 @@ export class UserService {
 		user.save()
 
 		await this.sendgridService.sendPasswordResetEmail(user.email)
+		return
+	}
+
+	async resetPassword(dto: ResetPasswordDto) {
+		const salt = await genSalt(10)
+		const hashPassword = await hash(dto.password, salt)
+
+		const user = await this.findByEmail(dto.email)
+
+		if (!user) throw new NotFoundException('user not found')
+
+		await this.UserModel.findByIdAndUpdate(user._id, { password: hashPassword })
+
 		return
 	}
 
