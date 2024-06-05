@@ -1,14 +1,29 @@
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator'
+import { validationMessage } from 'src/common/helpers/validation-message.helper'
+import {
+	MAX_NAME_LENGTH,
+	MAX_PASSWORD_LENGTH,
+	MIN_NAME_LENGTH,
+	MIN_PASSWORD_LENGTH,
+} from 'src/common/vars/validation-rules'
 
 export class RegistrationDto {
 	@IsString()
-	@MinLength(2, { message: 'Minimum length 2 characters.' })
-	@MaxLength(70, { message: 'Maximum length 70 characters.' })
+	@MinLength(MIN_NAME_LENGTH, {
+		message: validationMessage.minTextLength(MIN_NAME_LENGTH),
+	})
+	@MaxLength(MAX_NAME_LENGTH, {
+		message: validationMessage.maxTextLength(MAX_NAME_LENGTH),
+	})
 	firstName: string
 
 	@IsString()
-	@MinLength(2, { message: 'Minimum length 2 characters.' })
-	@MaxLength(70, { message: 'Maximum length 70 characters.' })
+	@MinLength(MIN_NAME_LENGTH, {
+		message: validationMessage.minTextLength(MIN_NAME_LENGTH),
+	})
+	@MaxLength(MAX_NAME_LENGTH, {
+		message: validationMessage.maxTextLength(MAX_NAME_LENGTH),
+	})
 	lastName: string
 
 	@IsString()
@@ -16,6 +31,11 @@ export class RegistrationDto {
 	email: string
 
 	@IsString()
-	@MinLength(6, { message: 'Minimum length 6 characters.' })
+	@MinLength(MIN_PASSWORD_LENGTH, {
+		message: validationMessage.minTextLength(MIN_PASSWORD_LENGTH),
+	})
+	@MaxLength(MAX_PASSWORD_LENGTH, {
+		message: validationMessage.maxTextLength(MAX_PASSWORD_LENGTH),
+	})
 	password: string
 }

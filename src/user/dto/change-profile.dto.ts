@@ -7,25 +7,44 @@ import {
 	MaxLength,
 	MinLength,
 } from 'class-validator'
+import { validationMessage } from 'src/common/helpers/validation-message.helper'
+import {
+	MAX_DESCRIPTION_LENGTH,
+	MAX_NAME_LENGTH,
+	MIN_DESCRIPTION_LENGTH,
+	MIN_NAME_LENGTH,
+} from 'src/common/vars/validation-rules'
 import { GenderEnum } from '../enums/gender.enum'
 
 export class ChangeProfileDto {
 	@IsString()
 	@IsOptional()
-	@MinLength(2, { message: 'Minimum length 2 characters.' })
-	@MaxLength(70, { message: 'Maximum length 70 characters.' })
+	@MinLength(MIN_NAME_LENGTH, {
+		message: validationMessage.minTextLength(MIN_NAME_LENGTH),
+	})
+	@MaxLength(MAX_NAME_LENGTH, {
+		message: validationMessage.maxTextLength(MAX_NAME_LENGTH),
+	})
 	firstName?: string
 
 	@IsString()
 	@IsOptional()
-	@MinLength(2, { message: 'Minimum length 2 characters.' })
-	@MaxLength(70, { message: 'Maximum length 70 characters.' })
+	@MinLength(MIN_NAME_LENGTH, {
+		message: validationMessage.minTextLength(MIN_NAME_LENGTH),
+	})
+	@MaxLength(MAX_NAME_LENGTH, {
+		message: validationMessage.maxTextLength(MAX_NAME_LENGTH),
+	})
 	lastName?: string
 
 	@IsString()
 	@IsOptional()
-	@MinLength(2, { message: 'Minimum length 2 characters.' })
-	@MaxLength(100, { message: 'Maximum length 100 characters.' })
+	@MinLength(MIN_NAME_LENGTH, {
+		message: validationMessage.minTextLength(MIN_NAME_LENGTH),
+	})
+	@MaxLength(MAX_NAME_LENGTH, {
+		message: validationMessage.maxTextLength(MAX_NAME_LENGTH),
+	})
 	nickname?: string
 
 	@IsDate()
@@ -44,7 +63,11 @@ export class ChangeProfileDto {
 
 	@IsString()
 	@IsOptional()
-	@MinLength(10, { message: 'Minimum length 10 characters.' })
-	@MaxLength(1000, { message: 'Maximum length 1000 characters.' })
+	@MinLength(MIN_DESCRIPTION_LENGTH, {
+		message: validationMessage.minTextLength(MIN_DESCRIPTION_LENGTH),
+	})
+	@MaxLength(MAX_DESCRIPTION_LENGTH, {
+		message: validationMessage.maxTextLength(MAX_DESCRIPTION_LENGTH),
+	})
 	description?: string
 }
