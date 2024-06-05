@@ -172,6 +172,16 @@ export class UserService {
 		return { posterUrl: updatedUser.posterUrl }
 	}
 
+	async deleteProfile(userId: string) {
+		const user = await this.findById(userId)
+		if (!user)
+			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
+
+		await this.UserModel.findByIdAndDelete(userId)
+
+		return
+	}
+
 	// HELPERS
 
 	returnUserFields(user: UserModel) {

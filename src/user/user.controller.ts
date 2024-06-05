@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	HttpCode,
 	HttpStatus,
@@ -95,5 +96,11 @@ export class UserController {
 		@User('_id') _id: string
 	) {
 		return await this.userService.uploadPoster(file, _id)
+	}
+
+	@Auth()
+	@Delete('delete-profile')
+	async deleteProfile(@User('_id') _id: string) {
+		return await this.userService.deleteProfile(_id)
 	}
 }
