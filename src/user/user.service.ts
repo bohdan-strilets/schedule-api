@@ -61,6 +61,30 @@ export class UserService {
 
 		if (!updatedUser) throw new NotFoundException('User not found')
 
-		return updatedUser
+		return this.returnUserFields(updatedUser)
+	}
+
+	// HELPERS
+
+	returnUserFields(user: UserModel) {
+		return {
+			_id: user._id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			nickname: user.nickname,
+			dateBirth: user.dateBirth,
+			location: user.location,
+			phoneNumber: user.phoneNumber,
+			email: user.email,
+			gender: user.gender,
+			description: user.description,
+			avatarUrl: user.avatarUrl,
+			posterUrl: user.posterUrl,
+			isActivated: user.isActivated,
+			company: user.company,
+			vacation: user.vacation,
+			createdAt: user.createdAt,
+			updatedAt: user.updatedAt,
+		}
 	}
 }

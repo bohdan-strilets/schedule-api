@@ -13,6 +13,7 @@ import { DefaultAvatarUrl } from 'src/common/vars/default-avatar'
 import { DefaultPosterUrl } from 'src/common/vars/default-poster'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
 import { UserModel } from 'src/user/models/user.model'
+import { UserService } from 'src/user/user.service'
 import { v4 } from 'uuid'
 import { LoginDto } from './dto/login.dto'
 import { RefreshTokenDto } from './dto/refresh-token.dto'
@@ -23,7 +24,8 @@ export class AuthService {
 	constructor(
 		@InjectModel(UserModel) private readonly UserModel: ModelType<UserModel>,
 		private readonly jwtService: JwtService,
-		private readonly sendgridService: SendgridService
+		private readonly sendgridService: SendgridService,
+		private readonly userService: UserService
 	) {}
 
 	async registration(dto: RegistrationDto) {
@@ -58,7 +60,7 @@ export class AuthService {
 		const tokens = await this.createTokenPair(String(createdUser._id))
 
 		return {
-			user: this.returnUserFields(createdUser),
+			user: this.userService.returnUserFields(createdUser),
 			tokens,
 		}
 	}
@@ -69,7 +71,7 @@ export class AuthService {
 		const tokens = await this.createTokenPair(String(user._id))
 
 		return {
-			user: this.returnUserFields(user),
+			user: this.userService.returnUserFields(user),
 			tokens,
 		}
 	}
@@ -87,10 +89,12 @@ export class AuthService {
 		const tokens = await this.createTokenPair(String(user._id))
 
 		return {
-			user: this.returnUserFields(user),
+			user: this.userService.returnUserFields(user),
 			tokens,
 		}
 	}
+
+	// HELPERS
 
 	async createTokenPair(userId: string) {
 		const data = { _id: userId }
@@ -104,16 +108,6 @@ export class AuthService {
 		})
 
 		return { refreshToken, accessToken }
-	}
-
-	returnUserFields(user: UserModel) {
-		return {
-			_id: user._id,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			email: user.email,
-			isActivated: user.isActivated,
-		}
 	}
 
 	async findByEmail(email: string) {
