@@ -30,7 +30,7 @@ export class AuthService {
 
 	async registration(dto: RegistrationDto) {
 		const { firstName, lastName, email, password } = dto
-		const userFromDb = await this.UserModel.findOne({ email })
+		const userFromDb = await this.userService.findByEmail(email)
 
 		if (userFromDb)
 			throw new ConflictException(
@@ -85,7 +85,7 @@ export class AuthService {
 		if (!checkedToken)
 			throw new UnauthorizedException('Invalid token or expired')
 
-		const user = await this.UserModel.findById(checkedToken._id)
+		const user = await this.userService.findById(checkedToken._id)
 		const tokens = await this.createTokenPair(String(user._id))
 
 		return {
@@ -110,12 +110,8 @@ export class AuthService {
 		return { refreshToken, accessToken }
 	}
 
-	async findByEmail(email: string) {
-		return this.UserModel.findOne({ email }).exec()
-	}
-
 	async validateUser(email: string, password: string) {
-		const user = await this.findByEmail(email)
+		const user = await this.userService.findByEmail(email)
 		if (!user) throw new BadRequestException('Email is wrong')
 
 		const isValidPassword = await compare(password, user.password)

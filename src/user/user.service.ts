@@ -87,4 +87,12 @@ export class UserService {
 			updatedAt: user.updatedAt,
 		}
 	}
+
+	async findByEmail(email: string) {
+		return this.UserModel.findOne({ email }).exec()
+	}
+
+	async findById(id: string) {
+		return this.UserModel.findById(id).exec()
+	}
 }
