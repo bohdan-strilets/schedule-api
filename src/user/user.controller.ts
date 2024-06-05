@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { User } from './decorators/user.decorator'
+import { ChangePasswordDto } from './dto/change-password.dto'
 import { ChangeProfileDto } from './dto/change-profile.dto'
 import { EmailDto } from './dto/email.dto'
 import { ResetPasswordDto } from './dto/reset-password.dto'
@@ -52,5 +53,14 @@ export class UserController {
 	@Post('reset-password')
 	async resetPassword(@Body() dto: ResetPasswordDto) {
 		return await this.userService.resetPassword(dto)
+	}
+
+	@Auth()
+	@Patch('change-password')
+	async changePassword(
+		@Body() dto: ChangePasswordDto,
+		@User('_id') _id: string
+	) {
+		return await this.userService.changePassword(dto, _id)
 	}
 }
