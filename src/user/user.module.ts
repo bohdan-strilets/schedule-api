@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { TypegooseModule } from 'nestjs-typegoose'
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module'
 import { PasswordModule } from 'src/password/password.module'
 import { SendgridModule } from 'src/sendgrid/sendgrid.module'
 import { UserModel } from './models/user.model'
@@ -18,6 +19,7 @@ import { UserService } from './user.service'
 		]),
 		SendgridModule,
 		PasswordModule,
+		CloudinaryModule,
 	],
 	controllers: [UserController],
 	providers: [UserService],

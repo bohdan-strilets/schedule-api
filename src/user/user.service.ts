@@ -4,7 +4,11 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
+import * as fs from 'fs'
 import { InjectModel } from 'nestjs-typegoose'
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service'
+import { FileType } from 'src/cloudinary/enums/file-type.enum'
+import { CloudinaryFolders } from 'src/common/vars/cloudinary-folders'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { PasswordService } from 'src/password/password.service'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
@@ -20,7 +24,8 @@ export class UserService {
 	constructor(
 		@InjectModel(UserModel) private readonly UserModel: ModelType<UserModel>,
 		private readonly sendgridService: SendgridService,
-		private readonly passwordService: PasswordService
+		private readonly passwordService: PasswordService,
+		private readonly cloudinaryService: CloudinaryService
 	) {}
 
 	async activationEmail(activationToken: string) {
@@ -123,6 +128,27 @@ export class UserService {
 
 		await this.UserModel.findByIdAndUpdate(userId, { password: hashPassword })
 		return
+	}
+
+	async uploadAvatar(file: Express.Multer.File, userId: string) {
+		const user = await this.findById(userId)
+		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+
+		const avatarPath = `${CloudinaryFolders.USER_AVATAR}${userId}`
+		const resultPath = await this.cloudinaryService.uploadFile(
+			file,
+			FileType.IMAGE,
+			avatarPath
+		)
+		fs.unlinkSync(file.path)
+
+		const updatedUser = await this.UserModel.findByIdAndUpdate(
+			userId,
+			{ avatarUrl: resultPath },
+			{ new: true }
+		)
+
+		return { avatarUrl: updatedUser.avatarUrl }
 	}
 
 	// HELPERS
