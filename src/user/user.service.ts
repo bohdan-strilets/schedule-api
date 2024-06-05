@@ -4,8 +4,8 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
-import { compare, genSalt, hash } from 'bcryptjs'
 import { InjectModel } from 'nestjs-typegoose'
+import { PasswordService } from 'src/password/password.service'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
 import { v4 } from 'uuid'
 import { ChangePasswordDto } from './dto/change-password.dto'
@@ -18,7 +18,8 @@ import { UserModel } from './models/user.model'
 export class UserService {
 	constructor(
 		@InjectModel(UserModel) private readonly UserModel: ModelType<UserModel>,
-		private readonly sendgridService: SendgridService
+		private readonly sendgridService: SendgridService,
+		private readonly passwordService: PasswordService
 	) {}
 
 	async activationEmail(activationToken: string) {
@@ -93,8 +94,7 @@ export class UserService {
 	}
 
 	async resetPassword(dto: ResetPasswordDto) {
-		const salt = await genSalt(10)
-		const hashPassword = await hash(dto.password, salt)
+		const hashPassword = await this.passwordService.createPassword(dto.password)
 
 		const user = await this.findByEmail(dto.email)
 		if (!user) throw new NotFoundException('user not found')
@@ -105,13 +105,17 @@ export class UserService {
 
 	async changePassword(dto: ChangePasswordDto, userId: string) {
 		const user = await this.findById(userId)
-		const isValidPassword = await compare(dto.password, user.password)
+		const isValidPassword = await this.passwordService.checkPassword(
+			dto.password,
+			user.password
+		)
 
 		if (!user || !isValidPassword)
 			throw new UnauthorizedException('user not authorized')
 
-		const salt = await genSalt(10)
-		const hashPassword = await hash(dto.newPassword, salt)
+		const hashPassword = await this.passwordService.createPassword(
+			dto.newPassword
+		)
 
 		await this.UserModel.findByIdAndUpdate(userId, { password: hashPassword })
 		return

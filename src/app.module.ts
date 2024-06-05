@@ -6,6 +6,7 @@ import { getMongoConfig } from './config/mongo.config'
 import { UserModule } from './user/user.module'
 import { SendgridModule } from './sendgrid/sendgrid.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { PasswordModule } from './password/password.module';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 		UserModule,
 		SendgridModule,
 		CloudinaryModule,
+		PasswordModule,
 	],
 })
 export class AppModule {}

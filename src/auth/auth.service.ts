@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ModelType } from '@typegoose/typegoose/lib/types'
-import { compare, genSalt, hash } from 'bcryptjs'
 import { InjectModel } from 'nestjs-typegoose'
 import { CompanyLogoUrl } from 'src/common/vars/company-logo'
 import { DefaultAvatarUrl } from 'src/common/vars/default-avatar'
 import { DefaultPosterUrl } from 'src/common/vars/default-poster'
+import { PasswordService } from 'src/password/password.service'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
 import { UserModel } from 'src/user/models/user.model'
 import { UserService } from 'src/user/user.service'
@@ -25,7 +25,8 @@ export class AuthService {
 		@InjectModel(UserModel) private readonly UserModel: ModelType<UserModel>,
 		private readonly jwtService: JwtService,
 		private readonly sendgridService: SendgridService,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		private readonly passwordService: PasswordService
 	) {}
 
 	async registration(dto: RegistrationDto) {
@@ -37,8 +38,7 @@ export class AuthService {
 				'User with this email is already in the system'
 			)
 
-		const salt = await genSalt(10)
-		const hashPassword = await hash(password, salt)
+		const hashPassword = await this.passwordService.createPassword(password)
 		const activationToken = v4()
 
 		const createdUser = await this.UserModel.create({
@@ -114,7 +114,11 @@ export class AuthService {
 		const user = await this.userService.findByEmail(email)
 		if (!user) throw new BadRequestException('Email is wrong')
 
-		const isValidPassword = await compare(password, user.password)
+		const isValidPassword = await this.passwordService.checkPassword(
+			password,
+			user.password
+		)
+
 		if (!isValidPassword) throw new BadRequestException('Password is wrong')
 
 		if (!user.isActivated)
