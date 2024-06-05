@@ -34,4 +34,10 @@ export class UserController {
 	async changeProfile(@Body() dto: ChangeProfileDto, @User('_id') _id: string) {
 		return await this.userService.changeProfile(_id, dto)
 	}
+
+	@Auth()
+	@Patch('change-email')
+	async changeEmail(@Body() dto: EmailDto, @User('_id') _id: string) {
+		return await this.userService.changeEmail(_id, dto)
+	}
 }

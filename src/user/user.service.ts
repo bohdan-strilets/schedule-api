@@ -64,6 +64,20 @@ export class UserService {
 		return this.returnUserFields(updatedUser)
 	}
 
+	async changeEmail(userId: string, dto: EmailDto) {
+		if (!userId) throw new UnauthorizedException('User not authorized')
+
+		const activationToken = v4()
+		await this.sendgridService.sendConfirmEmailLetter(
+			dto.email,
+			activationToken
+		)
+		const emailDto = { email: dto.email, activationToken, isActivated: false }
+		await this.UserModel.findByIdAndUpdate(userId, emailDto, { new: true })
+
+		return
+	}
+
 	// HELPERS
 
 	returnUserFields(user: UserModel) {
