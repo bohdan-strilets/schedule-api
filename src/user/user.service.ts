@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+	Injectable,
+	NotFoundException,
+	UnauthorizedException,
+} from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
 import { v4 } from 'uuid'
+import { ChangeProfileDto } from './dto/change-profile.dto'
 import { EmailDto } from './dto/email.dto'
 import { UserModel } from './models/user.model'
 
@@ -45,5 +50,17 @@ export class UserService {
 		)
 
 		return
+	}
+
+	async changeProfile(userId: string, dto: ChangeProfileDto) {
+		if (!userId) throw new UnauthorizedException('Not unauthorized')
+
+		const updatedUser = await this.UserModel.findByIdAndUpdate(userId, dto, {
+			new: true,
+		})
+
+		if (!updatedUser) throw new NotFoundException('User not found')
+
+		return updatedUser
 	}
 }
