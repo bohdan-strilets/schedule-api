@@ -10,6 +10,7 @@ import { InjectModel } from 'nestjs-typegoose'
 import { CompanyLogoUrl } from 'src/common/vars/company-logo'
 import { DefaultAvatarUrl } from 'src/common/vars/default-avatar'
 import { DefaultPosterUrl } from 'src/common/vars/default-poster'
+import { ErrorMessages } from 'src/common/vars/error-messages'
 import { PasswordService } from 'src/password/password.service'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
 import { UserModel } from 'src/user/models/user.model'
@@ -33,10 +34,7 @@ export class AuthService {
 		const { firstName, lastName, email, password } = dto
 		const userFromDb = await this.userService.findByEmail(email)
 
-		if (userFromDb)
-			throw new ConflictException(
-				'User with this email is already in the system'
-			)
+		if (userFromDb) throw new ConflictException(ErrorMessages.EMAIL_IN_USE)
 
 		const hashPassword = await this.passwordService.createPassword(password)
 		const activationToken = v4()
@@ -78,12 +76,13 @@ export class AuthService {
 
 	async refreshToken(dto: RefreshTokenDto) {
 		const { refreshToken } = dto
-		if (!refreshToken) throw new UnauthorizedException('Please sign in')
+		if (!refreshToken)
+			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
 
 		const checkedToken = await this.jwtService.verifyAsync(refreshToken)
 
 		if (!checkedToken)
-			throw new UnauthorizedException('Invalid token or expired')
+			throw new UnauthorizedException(ErrorMessages.INVALID_TOKEN)
 
 		const user = await this.userService.findById(checkedToken._id)
 		const tokens = await this.createTokenPair(String(user._id))
@@ -112,17 +111,18 @@ export class AuthService {
 
 	async validateUser(email: string, password: string) {
 		const user = await this.userService.findByEmail(email)
-		if (!user) throw new BadRequestException('Email is wrong')
+		if (!user) throw new BadRequestException(ErrorMessages.EMAIL_IS_WRONG)
 
 		const isValidPassword = await this.passwordService.checkPassword(
 			password,
 			user.password
 		)
 
-		if (!isValidPassword) throw new BadRequestException('Password is wrong')
+		if (!isValidPassword)
+			throw new BadRequestException(ErrorMessages.PASSWORD_IS_WRONG)
 
 		if (!user.isActivated)
-			throw new BadRequestException('Email is not activated')
+			throw new BadRequestException(ErrorMessages.EMAIL_IS_NOT_ACTIVATED)
 
 		return user
 	}

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
+import { ErrorMessages } from 'src/common/vars/error-messages'
 import { PasswordService } from 'src/password/password.service'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
 import { v4 } from 'uuid'
@@ -25,7 +26,8 @@ export class UserService {
 	async activationEmail(activationToken: string) {
 		const user = await this.UserModel.findOne({ activationToken })
 
-		if (!user) throw new NotFoundException('Activation token is wrong')
+		if (!user)
+			throw new NotFoundException(ErrorMessages.ACTIVATION_TOKEN_IS_WRONG)
 
 		const activationOptions = { activationToken: null, isActivated: true }
 		await this.UserModel.findByIdAndUpdate(user._id, activationOptions)
@@ -37,7 +39,7 @@ export class UserService {
 		const user = await this.UserModel.findOne({ email: dto.email })
 		const activationToken = v4()
 
-		if (!user) throw new NotFoundException('User with current email not found')
+		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
 
 		const updatedUser = await this.UserModel.findByIdAndUpdate(
 			user._id,
@@ -57,19 +59,21 @@ export class UserService {
 	}
 
 	async changeProfile(userId: string, dto: ChangeProfileDto) {
-		if (!userId) throw new UnauthorizedException('Not unauthorized')
+		if (!userId)
+			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
 
 		const updatedUser = await this.UserModel.findByIdAndUpdate(userId, dto, {
 			new: true,
 		})
 
-		if (!updatedUser) throw new NotFoundException('User not found')
+		if (!updatedUser) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
 
 		return this.returnUserFields(updatedUser)
 	}
 
 	async changeEmail(userId: string, dto: EmailDto) {
-		if (!userId) throw new UnauthorizedException('User not authorized')
+		if (!userId)
+			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
 
 		const activationToken = v4()
 		await this.sendgridService.sendConfirmEmailLetter(
@@ -84,7 +88,7 @@ export class UserService {
 
 	async requestResetPassword(dto: EmailDto) {
 		const user = await this.findByEmail(dto.email)
-		if (!user) throw new NotFoundException('user not found')
+		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
 
 		user.password = ''
 		user.save()
@@ -97,7 +101,7 @@ export class UserService {
 		const hashPassword = await this.passwordService.createPassword(dto.password)
 
 		const user = await this.findByEmail(dto.email)
-		if (!user) throw new NotFoundException('user not found')
+		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
 
 		await this.UserModel.findByIdAndUpdate(user._id, { password: hashPassword })
 		return
@@ -111,7 +115,7 @@ export class UserService {
 		)
 
 		if (!user || !isValidPassword)
-			throw new UnauthorizedException('user not authorized')
+			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
 
 		const hashPassword = await this.passwordService.createPassword(
 			dto.newPassword
