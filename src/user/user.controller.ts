@@ -82,4 +82,18 @@ export class UserController {
 	) {
 		return await this.userService.uploadAvatar(file, _id)
 	}
+
+	@Auth()
+	@HttpCode(HttpStatus.OK)
+	@Post('upload-poster')
+	@UseInterceptors(
+		FileInterceptor('poster', { dest: DEFAULT_FOLDER_FOR_FILES })
+	)
+	async uploadPoster(
+		@UploadedFile(imageValidator)
+		file: Express.Multer.File,
+		@User('_id') _id: string
+	) {
+		return await this.userService.uploadPoster(file, _id)
+	}
 }

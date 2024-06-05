@@ -151,6 +151,27 @@ export class UserService {
 		return { avatarUrl: updatedUser.avatarUrl }
 	}
 
+	async uploadPoster(file: Express.Multer.File, userId: string) {
+		const user = await this.findById(userId)
+		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+
+		const avatarPath = `${CloudinaryFolders.USER_POSTER}${userId}`
+		const resultPath = await this.cloudinaryService.uploadFile(
+			file,
+			FileType.IMAGE,
+			avatarPath
+		)
+		fs.unlinkSync(file.path)
+
+		const updatedUser = await this.UserModel.findByIdAndUpdate(
+			userId,
+			{ avatarUrl: resultPath },
+			{ new: true }
+		)
+
+		return { posterUrl: updatedUser.posterUrl }
+	}
+
 	// HELPERS
 
 	returnUserFields(user: UserModel) {
