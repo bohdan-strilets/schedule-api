@@ -40,4 +40,10 @@ export class UserController {
 	async changeEmail(@Body() dto: EmailDto, @User('_id') _id: string) {
 		return await this.userService.changeEmail(_id, dto)
 	}
+
+	@HttpCode(HttpStatus.OK)
+	@Post('request-reset-password')
+	async requestResetPassword(@Body() dto: EmailDto) {
+		return await this.userService.requestResetPassword(dto)
+	}
 }

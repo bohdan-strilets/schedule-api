@@ -78,6 +78,17 @@ export class UserService {
 		return
 	}
 
+	async requestResetPassword(dto: EmailDto) {
+		const user = await this.findByEmail(dto.email)
+		if (!user) throw new NotFoundException('user not found')
+
+		user.password = ''
+		user.save()
+
+		await this.sendgridService.sendPasswordResetEmail(user.email)
+		return
+	}
+
 	// HELPERS
 
 	returnUserFields(user: UserModel) {
