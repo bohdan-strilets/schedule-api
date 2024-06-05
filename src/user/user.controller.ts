@@ -15,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { DEFAULT_FOLDER_FOR_FILES } from 'src/common/vars/default-file-folder'
 import { User } from './decorators/user.decorator'
+import { ChangeAddressDto } from './dto/change-address.dto'
 import { ChangePasswordDto } from './dto/change-password.dto'
 import { ChangeProfileDto } from './dto/change-profile.dto'
 import { EmailDto } from './dto/email.dto'
@@ -102,5 +103,11 @@ export class UserController {
 	@Delete('delete-profile')
 	async deleteProfile(@User('_id') _id: string) {
 		return await this.userService.deleteProfile(_id)
+	}
+
+	@Auth()
+	@Patch('change-address')
+	async changeAddress(@Body() dto: ChangeAddressDto, @User('_id') _id: string) {
+		return await this.userService.changeAddress(dto, _id)
 	}
 }

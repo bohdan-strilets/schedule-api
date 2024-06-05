@@ -13,6 +13,7 @@ import { ErrorMessages } from 'src/common/vars/error-messages'
 import { PasswordService } from 'src/password/password.service'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
 import { v4 } from 'uuid'
+import { ChangeAddressDto } from './dto/change-address.dto'
 import { ChangePasswordDto } from './dto/change-password.dto'
 import { ChangeProfileDto } from './dto/change-profile.dto'
 import { EmailDto } from './dto/email.dto'
@@ -178,8 +179,21 @@ export class UserService {
 			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
 
 		await this.UserModel.findByIdAndDelete(userId)
-
 		return
+	}
+
+	async changeAddress(dto: ChangeAddressDto, userId: string) {
+		const location = { location: { ...dto } }
+		const updatedUser = await this.UserModel.findByIdAndUpdate(
+			userId,
+			location,
+			{ new: true }
+		)
+
+		if (!updatedUser)
+			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
+
+		return { user: this.returnUserFields(updatedUser) }
 	}
 
 	// HELPERS
