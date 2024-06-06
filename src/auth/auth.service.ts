@@ -45,8 +45,8 @@ export class AuthService {
 			email,
 			activationToken,
 			password: hashPassword,
-			avatarUrl: DefaultAvatarUrl,
-			posterUrl: DefaultPosterUrl,
+			avatarUrls: [DefaultAvatarUrl],
+			posterUrls: [DefaultPosterUrl],
 			company: { logoUrl: CompanyLogoUrl },
 		})
 

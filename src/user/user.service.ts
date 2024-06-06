@@ -141,15 +141,15 @@ export class UserService {
 			FileType.IMAGE,
 			avatarPath
 		)
-		fs.unlinkSync(file.path)
 
+		fs.unlinkSync(file.path)
 		const updatedUser = await this.UserModel.findByIdAndUpdate(
 			userId,
-			{ avatarUrl: resultPath },
+			{ $push: { avatarUrls: resultPath } },
 			{ new: true }
 		)
 
-		return { avatarUrl: updatedUser.avatarUrl }
+		return { avatarUrl: updatedUser.avatarUrls }
 	}
 
 	async uploadPoster(file: Express.Multer.File, userId: string) {
@@ -157,7 +157,6 @@ export class UserService {
 		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
 
 		const posterPath = `${CloudinaryFolders.USER_POSTER}${userId}`
-
 		const resultPath = await this.cloudinaryService.uploadFile(
 			file,
 			FileType.IMAGE,
@@ -165,14 +164,13 @@ export class UserService {
 		)
 
 		fs.unlinkSync(file.path)
-
 		const updatedUser = await this.UserModel.findByIdAndUpdate(
 			userId,
-			{ posterUrl: resultPath },
+			{ $push: { posterUrls: resultPath } },
 			{ new: true }
 		)
 
-		return { posterUrl: updatedUser.posterUrl }
+		return { posterUrl: updatedUser.posterUrls }
 	}
 
 	async deleteProfile(userId: string) {
@@ -182,23 +180,11 @@ export class UserService {
 
 		await this.UserModel.findByIdAndDelete(userId)
 
-		const avatarPublicId = this.cloudinaryService.getPublicId(user.avatarUrl)
-		if (!avatarPublicId.split('/').includes('default')) {
-			await this.cloudinaryService.deleteFile({
-				filePath: user.avatarUrl,
-				fileType: FileType.IMAGE,
-				folderPath: `${CloudinaryFolders.USER_AVATAR}${userId}`,
-			})
-		}
+		const avatars = user.avatarUrls
+		await this.deleteUserFiles(avatars)
 
-		const posterPublicId = this.cloudinaryService.getPublicId(user.posterUrl)
-		if (!posterPublicId.split('/').includes('default')) {
-			await this.cloudinaryService.deleteFile({
-				filePath: user.posterUrl,
-				fileType: FileType.IMAGE,
-				folderPath: `${CloudinaryFolders.USER_POSTER}${userId}`,
-			})
-		}
+		const posters = user.posterUrls
+		await this.deleteUserFiles(posters)
 
 		return
 	}
@@ -231,8 +217,8 @@ export class UserService {
 			email: user.email,
 			gender: user.gender,
 			description: user.description,
-			avatarUrl: user.avatarUrl,
-			posterUrl: user.posterUrl,
+			avatarUrl: user.avatarUrls,
+			posterUrl: user.posterUrls,
 			isActivated: user.isActivated,
 			company: user.company,
 			vacation: user.vacation,
@@ -247,5 +233,15 @@ export class UserService {
 
 	async findById(id: string) {
 		return this.UserModel.findById(id).exec()
+	}
+
+	async deleteUserFiles(arrPath: string[]) {
+		if (arrPath.length > 1) {
+			const avatarsFolderPath = this.cloudinaryService.getFolderPath(arrPath[1])
+
+			if (!avatarsFolderPath.split('/').includes('default')) {
+				await this.cloudinaryService.deleteFilesAndFolder(avatarsFolderPath)
+			}
+		}
 	}
 }

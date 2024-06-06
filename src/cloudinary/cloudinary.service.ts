@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { v2 } from 'cloudinary'
+import { UploadApiResponse, v2 } from 'cloudinary'
 import { FileType } from './enums/file-type.enum'
 
 @Injectable()
@@ -28,32 +28,49 @@ export class CloudinaryService {
 		return null
 	}
 
-	getPublicId(url: string): string {
+	getFolderPath(url: string): string {
 		const path = url.split('/')
-		const filenameWithExtension = path.at(-1).split('.')
-		const fileName = filenameWithExtension.slice(0, 1).join()
 		const folders = path.slice(7, path.length - 1).join('/')
-		const publicId = [folders, fileName].join('/')
-		return publicId
+		return [folders].join('/')
 	}
-	async deleteFile(options: {
-		filePath: string
-		fileType: FileType
-		folderPath: string
-	}): Promise<void> {
-		const deleteOptions = { resource_type: options.fileType, invalidate: true }
-		const publicId = this.getPublicId(options.filePath)
 
+	async deleteFile(publicId: string, fileType: FileType): Promise<void> {
+		const deleteOptions = { resource_type: fileType, invalidate: true }
 		try {
 			await this.cloudinary.uploader.destroy(publicId, deleteOptions)
 		} catch (error) {
 			throw new Error(`Deleting error: ${error}`)
 		}
+	}
 
+	async deleteFolder(folderPath: string) {
 		try {
-			await this.cloudinary.api.delete_folder(options.folderPath)
+			await this.cloudinary.api.delete_folder(folderPath)
 		} catch (error) {
 			throw new Error(`Deleting error: ${error}`)
+		}
+	}
+
+	async deleteFilesAndFolder(folderPath: string): Promise<void> {
+		try {
+			const folderResult = await this.cloudinary.api.resources({
+				type: 'upload',
+				prefix: folderPath,
+			})
+
+			const publicIds = folderResult.resources.map(
+				(file: UploadApiResponse) => file.public_id
+			)
+
+			await Promise.all(
+				publicIds.map((publicId: string) =>
+					this.deleteFile(publicId, FileType.IMAGE)
+				)
+			)
+
+			await this.deleteFolder(folderPath)
+		} catch (error) {
+			throw new Error('Error deleting files and folder')
 		}
 	}
 

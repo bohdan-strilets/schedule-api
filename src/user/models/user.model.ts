@@ -38,10 +38,10 @@ export class UserModel extends TimeStamps {
 	description: string
 
 	@prop()
-	avatarUrl: string
+	avatarUrls: string[]
 
 	@prop()
-	posterUrl: string
+	posterUrls: string[]
 
 	@prop()
 	activationToken: string
