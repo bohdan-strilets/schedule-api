@@ -156,17 +156,19 @@ export class UserService {
 		const user = await this.findById(userId)
 		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
 
-		const avatarPath = `${CloudinaryFolders.USER_POSTER}${userId}`
+		const posterPath = `${CloudinaryFolders.USER_POSTER}${userId}`
+
 		const resultPath = await this.cloudinaryService.uploadFile(
 			file,
 			FileType.IMAGE,
-			avatarPath
+			posterPath
 		)
+
 		fs.unlinkSync(file.path)
 
 		const updatedUser = await this.UserModel.findByIdAndUpdate(
 			userId,
-			{ avatarUrl: resultPath },
+			{ posterUrl: resultPath },
 			{ new: true }
 		)
 
@@ -179,6 +181,25 @@ export class UserService {
 			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
 
 		await this.UserModel.findByIdAndDelete(userId)
+
+		const avatarPublicId = this.cloudinaryService.getPublicId(user.avatarUrl)
+		if (!avatarPublicId.split('/').includes('default')) {
+			await this.cloudinaryService.deleteFile({
+				filePath: user.avatarUrl,
+				fileType: FileType.IMAGE,
+				folderPath: `${CloudinaryFolders.USER_AVATAR}${userId}`,
+			})
+		}
+
+		const posterPublicId = this.cloudinaryService.getPublicId(user.posterUrl)
+		if (!posterPublicId.split('/').includes('default')) {
+			await this.cloudinaryService.deleteFile({
+				filePath: user.posterUrl,
+				fileType: FileType.IMAGE,
+				folderPath: `${CloudinaryFolders.USER_POSTER}${userId}`,
+			})
+		}
+
 		return
 	}
 

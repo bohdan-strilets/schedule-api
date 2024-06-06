@@ -36,21 +36,25 @@ export class CloudinaryService {
 		const publicId = [folders, fileName].join('/')
 		return publicId
 	}
+	async deleteFile(options: {
+		filePath: string
+		fileType: FileType
+		folderPath: string
+	}): Promise<void> {
+		const deleteOptions = { resource_type: options.fileType, invalidate: true }
+		const publicId = this.getPublicId(options.filePath)
 
-	async deleteFile(path: string, type: FileType): Promise<void> {
-		const deleteOptions = { resource_type: type, invalidate: true }
-		const publicId = this.getPublicId(path)
-		const result = await this.cloudinary.uploader.destroy(
-			publicId,
-			deleteOptions
-		)
-		if (result.result !== 'ok') {
-			throw new Error(`Failed to delete file: ${path}`)
+		try {
+			await this.cloudinary.uploader.destroy(publicId, deleteOptions)
+		} catch (error) {
+			throw new Error(`Deleting error: ${error}`)
 		}
-	}
 
-	async deleteFolder(folderPath: string): Promise<void> {
-		await this.cloudinary.api.delete_folder(folderPath)
+		try {
+			await this.cloudinary.api.delete_folder(options.folderPath)
+		} catch (error) {
+			throw new Error(`Deleting error: ${error}`)
+		}
 	}
 
 	isGoogleAvatarUrl(url: string): boolean {
