@@ -84,13 +84,13 @@ export class AuthService {
 		if (!checkedToken)
 			throw new UnauthorizedException(ErrorMessages.INVALID_TOKEN)
 
-		const user = await this.userService.findById(checkedToken._id)
-		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+		const userFromDb = await this.userService.findById(checkedToken._id)
+		if (!userFromDb) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
 
-		const tokens = await this.createTokenPair(String(user._id))
+		const tokens = await this.createTokenPair(String(userFromDb._id))
 
 		return {
-			user: this.userService.returnUserFields(user),
+			user: this.userService.returnUserFields(userFromDb),
 			tokens,
 		}
 	}
