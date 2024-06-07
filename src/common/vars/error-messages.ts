@@ -10,4 +10,6 @@ export const ErrorMessages = {
 
 	BAD_REQUEST: 'Bad request, check entered data',
 	NOT_FOUND_BY_ID: 'Entity by ID was not found',
+
+	VACATION_ALREADY: 'The vacation is already set up for the current year.',
 }
