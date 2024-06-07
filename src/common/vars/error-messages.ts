@@ -7,4 +7,6 @@ export const ErrorMessages = {
 	USER_NOT_FOUND: 'User not found',
 	INVALID_TOKEN: 'Invalid token or expired',
 	ACTIVATION_TOKEN_IS_WRONG: 'Activation token is wrong',
+
+	BAD_REQUEST: 'Bad request, check entered data',
 }

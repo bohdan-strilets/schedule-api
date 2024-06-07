@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module'
 import { SendgridModule } from './sendgrid/sendgrid.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PasswordModule } from './password/password.module';
+import { CompanyModule } from './company/company.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { PasswordModule } from './password/password.module';
 		SendgridModule,
 		CloudinaryModule,
 		PasswordModule,
+		CompanyModule,
 	],
 })
 export class AppModule {}
