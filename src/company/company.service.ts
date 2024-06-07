@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
+import { CompanyLogoUrl } from 'src/common/vars/company-logo'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { CreateCompanyDto } from './dto/create-company.dto'
 import { UpdateCompanyDto } from './dto/update-company.dto'
@@ -19,7 +20,7 @@ export class CompanyService {
 
 	async create(userId: string, dto: CreateCompanyDto) {
 		this.checkDto(dto)
-		const data = { ...dto, owner: userId }
+		const data = { ...dto, owner: userId, logoUrl: CompanyLogoUrl }
 		return await this.CompanyModel.create(data)
 	}
 
