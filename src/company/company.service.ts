@@ -3,6 +3,7 @@ import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { CreateCompanyDto } from './dto/create-company.dto'
+import { UpdateCompanyDto } from './dto/update-company.dto'
 import { CompanyModel } from './models/company.model'
 
 @Injectable()
@@ -17,5 +18,17 @@ export class CompanyService {
 
 		const data = { ...dto, owner: userId }
 		return await this.CompanyModel.create(data)
+	}
+
+	async update(companyId: string, dto: UpdateCompanyDto) {
+		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
+
+		const updatedCompany = await this.CompanyModel.findByIdAndUpdate(
+			companyId,
+			dto,
+			{ new: true }
+		)
+
+		return updatedCompany
 	}
 }

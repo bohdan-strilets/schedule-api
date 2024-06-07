@@ -11,3 +11,7 @@ export const MAX_LOCATION_LENGTH = 100
 // COMPANY
 export const MIN_COMPANY_NAME = 3
 export const MAX_COMPANY_NAME = 100
+export const MIN_PROFESSION_LENGTH = 5
+export const MAX_PROFESSION_LENGTH = 300
+export const MIN_SALARY_PER_HOUR = 0
+export const MAX_SALARY_PER_HOUR = 500
