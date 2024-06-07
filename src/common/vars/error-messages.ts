@@ -9,4 +9,5 @@ export const ErrorMessages = {
 	ACTIVATION_TOKEN_IS_WRONG: 'Activation token is wrong',
 
 	BAD_REQUEST: 'Bad request, check entered data',
+	NOT_FOUND_BY_ID: 'Entity by ID was not found',
 }

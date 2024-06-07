@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { User } from 'src/user/decorators/user.decorator'
 import { CompanyService } from './company.service'
@@ -22,5 +22,10 @@ export class CompanyController {
 		@Param('companyId') companyId: string
 	) {
 		return await this.companyService.update(companyId, dto)
+	}
+	@Auth()
+	@Delete('delete/:companyId')
+	async delete(@Param('companyId') companyId: string) {
+		return await this.companyService.delete(companyId)
 	}
 }

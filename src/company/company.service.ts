@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+	BadRequestException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
 import { ErrorMessages } from 'src/common/vars/error-messages'
@@ -30,5 +34,14 @@ export class CompanyService {
 		)
 
 		return updatedCompany
+	}
+
+	async delete(companyId: string) {
+		const companyFromDb = await this.CompanyModel.findById(companyId)
+		if (!companyFromDb)
+			throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+
+		await this.CompanyModel.findByIdAndDelete(companyId)
+		return
 	}
 }
