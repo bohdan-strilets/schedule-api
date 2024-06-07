@@ -40,4 +40,9 @@ export class CompanyController {
 	async getById(@Param('companyId') companyId: string) {
 		return await this.companyService.getById(companyId)
 	}
+
+	@Get('all')
+	async getAll() {
+		return await this.companyService.getAll()
+	}
 }

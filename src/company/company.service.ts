@@ -42,6 +42,10 @@ export class CompanyService {
 		return await this.checkCompanyFromDb(companyId)
 	}
 
+	async getAll() {
+		return await this.CompanyModel.find()
+	}
+
 	// HELPERS
 
 	async checkCompanyFromDb(companyId: string) {
