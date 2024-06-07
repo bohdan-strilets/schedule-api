@@ -38,6 +38,10 @@ export class CompanyService {
 		return
 	}
 
+	async getById(companyId: string) {
+		return await this.checkCompanyFromDb(companyId)
+	}
+
 	// HELPERS
 
 	async checkCompanyFromDb(companyId: string) {
