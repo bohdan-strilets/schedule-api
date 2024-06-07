@@ -2,6 +2,7 @@ import {
 	BadRequestException,
 	ConflictException,
 	Injectable,
+	NotFoundException,
 	UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
@@ -80,11 +81,12 @@ export class AuthService {
 			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
 
 		const checkedToken = await this.jwtService.verifyAsync(refreshToken)
-
 		if (!checkedToken)
 			throw new UnauthorizedException(ErrorMessages.INVALID_TOKEN)
 
 		const user = await this.userService.findById(checkedToken._id)
+		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+
 		const tokens = await this.createTokenPair(String(user._id))
 
 		return {
