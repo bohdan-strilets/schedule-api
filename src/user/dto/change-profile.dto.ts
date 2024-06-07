@@ -1,5 +1,5 @@
 import {
-	IsDate,
+	IsDateString,
 	IsIn,
 	IsOptional,
 	IsPhoneNumber,
@@ -7,7 +7,6 @@ import {
 	MaxLength,
 	MinLength,
 } from 'class-validator'
-import { validationMessage } from 'src/common/helpers/validation-message.helper'
 import {
 	MAX_DESCRIPTION_LENGTH,
 	MAX_NAME_LENGTH,
@@ -19,35 +18,23 @@ import { GenderEnum } from '../enums/gender.enum'
 export class ChangeProfileDto {
 	@IsString()
 	@IsOptional()
-	@MinLength(MIN_NAME_LENGTH, {
-		message: validationMessage.minTextLength(MIN_NAME_LENGTH),
-	})
-	@MaxLength(MAX_NAME_LENGTH, {
-		message: validationMessage.maxTextLength(MAX_NAME_LENGTH),
-	})
+	@MinLength(MIN_NAME_LENGTH)
+	@MaxLength(MAX_NAME_LENGTH)
 	firstName?: string
 
 	@IsString()
 	@IsOptional()
-	@MinLength(MIN_NAME_LENGTH, {
-		message: validationMessage.minTextLength(MIN_NAME_LENGTH),
-	})
-	@MaxLength(MAX_NAME_LENGTH, {
-		message: validationMessage.maxTextLength(MAX_NAME_LENGTH),
-	})
+	@MinLength(MIN_NAME_LENGTH)
+	@MaxLength(MAX_NAME_LENGTH)
 	lastName?: string
 
 	@IsString()
 	@IsOptional()
-	@MinLength(MIN_NAME_LENGTH, {
-		message: validationMessage.minTextLength(MIN_NAME_LENGTH),
-	})
-	@MaxLength(MAX_NAME_LENGTH, {
-		message: validationMessage.maxTextLength(MAX_NAME_LENGTH),
-	})
+	@MinLength(MIN_NAME_LENGTH)
+	@MaxLength(MAX_NAME_LENGTH)
 	nickname?: string
 
-	@IsDate()
+	@IsDateString()
 	@IsOptional()
 	dateBirth?: Date
 
@@ -57,17 +44,13 @@ export class ChangeProfileDto {
 	phoneNumber?: string
 
 	@IsString()
-	@IsIn([GenderEnum])
+	@IsIn(Object.values(GenderEnum))
 	@IsOptional()
 	gender?: GenderEnum
 
 	@IsString()
 	@IsOptional()
-	@MinLength(MIN_DESCRIPTION_LENGTH, {
-		message: validationMessage.minTextLength(MIN_DESCRIPTION_LENGTH),
-	})
-	@MaxLength(MAX_DESCRIPTION_LENGTH, {
-		message: validationMessage.maxTextLength(MAX_DESCRIPTION_LENGTH),
-	})
+	@MinLength(MIN_DESCRIPTION_LENGTH)
+	@MaxLength(MAX_DESCRIPTION_LENGTH)
 	description?: string
 }

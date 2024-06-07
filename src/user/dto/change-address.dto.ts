@@ -5,7 +5,6 @@ import {
 	MaxLength,
 	MinLength,
 } from 'class-validator'
-import { validationMessage } from 'src/common/helpers/validation-message.helper'
 import {
 	MAX_LOCATION_LENGTH,
 	MIN_LOCATION_LENGTH,
@@ -14,22 +13,14 @@ import {
 export class ChangeAddressDto {
 	@IsString()
 	@IsOptional()
-	@MinLength(MIN_LOCATION_LENGTH, {
-		message: validationMessage.minTextLength(MIN_LOCATION_LENGTH),
-	})
-	@MaxLength(MAX_LOCATION_LENGTH, {
-		message: validationMessage.minTextLength(MAX_LOCATION_LENGTH),
-	})
+	@MinLength(MIN_LOCATION_LENGTH)
+	@MaxLength(MAX_LOCATION_LENGTH)
 	city?: string
 
 	@IsString()
 	@IsOptional()
-	@MinLength(MIN_LOCATION_LENGTH, {
-		message: validationMessage.minTextLength(MIN_LOCATION_LENGTH),
-	})
-	@MaxLength(MAX_LOCATION_LENGTH, {
-		message: validationMessage.minTextLength(MAX_LOCATION_LENGTH),
-	})
+	@MinLength(MIN_LOCATION_LENGTH)
+	@MaxLength(MAX_LOCATION_LENGTH)
 	country?: string
 
 	@IsString()
