@@ -220,7 +220,6 @@ export class UserService {
 			avatarUrl: user.avatarUrls,
 			posterUrl: user.posterUrls,
 			isActivated: user.isActivated,
-			company: user.company,
 			vacation: user.vacation,
 			createdAt: user.createdAt,
 			updatedAt: user.updatedAt,
