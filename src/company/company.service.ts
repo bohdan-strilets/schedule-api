@@ -18,30 +18,37 @@ export class CompanyService {
 	) {}
 
 	async create(userId: string, dto: CreateCompanyDto) {
-		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
-
+		this.checkDto(dto)
 		const data = { ...dto, owner: userId }
 		return await this.CompanyModel.create(data)
 	}
 
 	async update(companyId: string, dto: UpdateCompanyDto) {
-		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
+		this.checkDto(dto)
+		await this.checkCompanyFromDb(companyId)
 
-		const updatedCompany = await this.CompanyModel.findByIdAndUpdate(
-			companyId,
-			dto,
-			{ new: true }
-		)
-
-		return updatedCompany
+		return await this.CompanyModel.findByIdAndUpdate(companyId, dto, {
+			new: true,
+		})
 	}
 
 	async delete(companyId: string) {
+		await this.checkCompanyFromDb(companyId)
+		await this.CompanyModel.findByIdAndDelete(companyId)
+		return
+	}
+
+	// HELPERS
+
+	async checkCompanyFromDb(companyId: string) {
 		const companyFromDb = await this.CompanyModel.findById(companyId)
 		if (!companyFromDb)
 			throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
 
-		await this.CompanyModel.findByIdAndDelete(companyId)
-		return
+		return companyFromDb
+	}
+
+	checkDto(dto: any) {
+		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
 	}
 }
