@@ -10,6 +10,7 @@ import { PasswordModule } from './password/password.module';
 import { CompanyModule } from './company/company.module';
 import { VacationModule } from './vacation/vacation.module';
 import { CalendarModule } from './calendar/calendar.module';
+import { TodosModule } from './todos/todos.module';
 
 @Module({
 	imports: [
@@ -27,6 +28,7 @@ import { CalendarModule } from './calendar/calendar.module';
 		CompanyModule,
 		VacationModule,
 		CalendarModule,
+		TodosModule,
 	],
 })
 export class AppModule {}
