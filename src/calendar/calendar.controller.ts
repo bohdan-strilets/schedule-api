@@ -33,6 +33,11 @@ export class CalendarController {
 		return await this.calendarService.delete(dayId)
 	}
 
+	@Delete('delete-all')
+	async deleteAll(@User('_id') _id: string) {
+		return await this.calendarService.deleteAll(_id)
+	}
+
 	@Get('by-id/:dayId')
 	async getById(@Param('dayId') dayId: string) {
 		return await this.calendarService.getById(dayId)

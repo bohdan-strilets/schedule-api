@@ -37,6 +37,11 @@ export class CalendarService {
 		return
 	}
 
+	async deleteAll(userId: string) {
+		await this.DayModel.deleteMany({ owner: userId })
+		return
+	}
+
 	async getById(dayId: string) {
 		return await this.checkDayFromDb(dayId)
 	}
