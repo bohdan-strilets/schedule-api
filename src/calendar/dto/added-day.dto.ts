@@ -2,6 +2,7 @@ import {
 	IsBoolean,
 	IsDateString,
 	IsIn,
+	IsNumber,
 	IsOptional,
 	IsPositive,
 	IsString,
@@ -11,10 +12,8 @@ import {
 import {
 	MAX_EARNING,
 	MAX_NUMBER_HOURS,
-	MAX_SHIFT_NUMBER,
 	MIN_EARNING,
 	MIN_NUMBER_HOURS,
-	MIN_SHIFT_NUMBER,
 } from 'src/common/vars/validation-rules'
 import { ShiftNumberEnum } from '../enums/shift-number.enum'
 import { StatusEnum } from '../enums/status.enum'
@@ -37,11 +36,9 @@ export class AddedDayDto {
 	@IsOptional()
 	timeRange?: string
 
-	@IsPositive()
+	@IsNumber()
 	@IsIn(Object.values(ShiftNumberEnum))
 	@IsOptional()
-	@Min(MIN_SHIFT_NUMBER)
-	@Max(MAX_SHIFT_NUMBER)
 	shiftNumber?: ShiftNumberEnum
 
 	@IsBoolean()

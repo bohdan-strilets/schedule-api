@@ -25,5 +25,3 @@ export const MIN_NUMBER_HOURS = 0
 export const MAX_NUMBER_HOURS = 14
 export const MIN_EARNING = 0
 export const MAX_EARNING = 10000
-export const MIN_SHIFT_NUMBER = 0
-export const MAX_SHIFT_NUMBER = 2
