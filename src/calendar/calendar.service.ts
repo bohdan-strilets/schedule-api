@@ -41,6 +41,10 @@ export class CalendarService {
 		return await this.checkDayFromDb(dayId)
 	}
 
+	async getAll() {
+		return await this.DayModel.find()
+	}
+
 	// HELPERS
 
 	async checkDayFromDb(dayId: string) {

@@ -37,4 +37,9 @@ export class CalendarController {
 	async getById(@Param('dayId') dayId: string) {
 		return await this.calendarService.getById(dayId)
 	}
+
+	@Get('all')
+	async getAll() {
+		return await this.calendarService.getAll()
+	}
 }
