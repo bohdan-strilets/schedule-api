@@ -22,7 +22,7 @@ export class DayModel extends TimeStamps {
 	@prop()
 	timeRange?: string
 
-	@prop({ default: ShiftNumberEnum.Shift0 })
+	@prop({ default: ShiftNumberEnum.SHIFT_0 })
 	shiftNumber?: ShiftNumberEnum
 
 	@prop({ default: false })

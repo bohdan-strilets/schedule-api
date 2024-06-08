@@ -1,5 +1,5 @@
 export enum ShiftNumberEnum {
-	Shift0 = 0,
-	Shift1 = 1,
-	Shift2 = 2,
+	SHIFT_0 = 0,
+	SHIFT_1 = 1,
+	SHIFT_2 = 2,
 }

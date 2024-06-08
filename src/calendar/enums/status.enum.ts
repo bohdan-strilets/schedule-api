@@ -1,6 +1,6 @@
 export enum StatusEnum {
-	work = 'work',
-	dayOff = 'day-off',
-	vacation = 'vacation',
-	sickLeave = 'sick-leave',
+	WORK = 'work',
+	DAY_OFF = 'day-off',
+	VACATION = 'vacation',
+	SICK_LEAVE = 'sick-leave',
 }
