@@ -10,6 +10,7 @@ import {
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { User } from 'src/user/decorators/user.decorator'
 import { CreateTodoDto } from './dto/create-todo.dto'
+import { UpdateCompletedDto } from './dto/update-completed.dto'
 import { UpdateTodoDto } from './dto/update-todo.dto'
 import { TodosService } from './todos.service'
 
@@ -26,6 +27,14 @@ export class TodosController {
 	@Patch('update/:todoId')
 	async update(@Body() dto: UpdateTodoDto, @Param('todoId') todoId: string) {
 		return await this.todosService.update(todoId, dto)
+	}
+
+	@Patch('update-completed/:todoId')
+	async updateCompleted(
+		@Body() dto: UpdateCompletedDto,
+		@Param('todoId') todoId: string
+	) {
+		return await this.todosService.updateCompleted(todoId, dto)
 	}
 
 	@Delete('delete/:todoId')
@@ -46,5 +55,10 @@ export class TodosController {
 	@Get('all')
 	async getAll(@User('_id') _id: string) {
 		return await this.todosService.getAll(_id)
+	}
+
+	@Get('by-day/:dayId')
+	async getTodoByDay(@Param('dayId') dayId: string, @User('_id') _id: string) {
+		return await this.todosService.getTodoByDay(dayId, _id)
 	}
 }

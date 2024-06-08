@@ -7,6 +7,7 @@ import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { CreateTodoDto } from './dto/create-todo.dto'
+import { UpdateCompletedDto } from './dto/update-completed.dto'
 import { UpdateTodoDto } from './dto/update-todo.dto'
 import { TodoModel } from './models/todo.model'
 
@@ -32,6 +33,17 @@ export class TodosService {
 		})
 	}
 
+	async updateCompleted(todoId: string, dto: UpdateCompletedDto) {
+		this.checkDto(dto)
+		await this.checkTodoFromDb(todoId)
+
+		return await this.TodoModel.findByIdAndUpdate(
+			todoId,
+			{ ...dto },
+			{ new: true }
+		)
+	}
+
 	async delete(todoId: string) {
 		await this.checkTodoFromDb(todoId)
 		await this.TodoModel.findByIdAndDelete(todoId)
@@ -49,6 +61,13 @@ export class TodosService {
 
 	async getAll(userId: string) {
 		return await this.TodoModel.find({ owner: userId })
+	}
+
+	async getTodoByDay(dayId: string, userId: string) {
+		const todoFromDb = await this.TodoModel.findOne({ day: dayId })
+		if (!todoFromDb) throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+
+		return await this.TodoModel.find({ day: dayId, owner: userId })
 	}
 
 	// HELPERS
