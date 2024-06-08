@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	Patch,
+	Post,
+} from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { User } from 'src/user/decorators/user.decorator'
 import { AddedVacationDto } from './dto/added-vacation.dto'
@@ -40,5 +48,15 @@ export class VacationController {
 	@Get('all')
 	async getAll(@User('_id') _id: string) {
 		return await this.vacationService.getAll(_id)
+	}
+
+	@Delete('delete/:vacationId')
+	async delete(@Param('vacationId') vacationId: string) {
+		return await this.vacationService.delete(vacationId)
+	}
+
+	@Delete('delete-all')
+	async deleteAll(@User('_id') _id: string) {
+		return await this.vacationService.deleteAll(_id)
 	}
 }

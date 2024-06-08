@@ -76,6 +76,17 @@ export class VacationService {
 		return await this.VacationModel.find({ owner: userId })
 	}
 
+	async delete(vacationId: string) {
+		await this.checkVacationFromDb(vacationId)
+		await this.VacationModel.findByIdAndDelete(vacationId)
+		return
+	}
+
+	async deleteAll(userId: string) {
+		await this.VacationModel.deleteMany({ owner: userId })
+		return
+	}
+
 	// HELPERS
 
 	checkDto(dto: any) {
