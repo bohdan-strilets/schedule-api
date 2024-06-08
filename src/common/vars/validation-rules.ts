@@ -19,3 +19,11 @@ export const MAX_SALARY_PER_HOUR = 500
 // VACATION
 export const MIN_AMOUNT_HOURS = 0
 export const MAX_AMOUNT_HOURS = 208
+
+// CALENDAR
+export const MIN_NUMBER_HOURS = 0
+export const MAX_NUMBER_HOURS = 14
+export const MIN_EARNING = 0
+export const MAX_EARNING = 10000
+export const MIN_SHIFT_NUMBER = 0
+export const MAX_SHIFT_NUMBER = 2
