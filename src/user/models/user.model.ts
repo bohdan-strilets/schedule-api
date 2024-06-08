@@ -1,7 +1,6 @@
 import { prop } from '@typegoose/typegoose'
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
 import { LocationModel } from './location.model'
-import { VacationModel } from './vacation.model'
 
 export interface UserModel extends Base {}
 
@@ -47,7 +46,4 @@ export class UserModel extends TimeStamps {
 
 	@prop({ default: false })
 	isActivated: boolean
-
-	@prop()
-	vacation: VacationModel
 }
