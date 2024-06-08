@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { User } from 'src/user/decorators/user.decorator'
 import { AddedVacationDto } from './dto/added-vacation.dto'
@@ -30,5 +30,10 @@ export class VacationController {
 		@Param('vacationId') vacationId: string
 	) {
 		return await this.vacationService.changeAmountHours(vacationId, dto)
+	}
+
+	@Get('by-id/:vacationId')
+	async getById(@Param('vacationId') vacationId: string) {
+		return await this.vacationService.getById(vacationId)
 	}
 }

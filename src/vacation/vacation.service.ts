@@ -68,6 +68,10 @@ export class VacationService {
 		return updatedVacation
 	}
 
+	async getById(vacationId: string) {
+		return await this.checkVacationFromDb(vacationId)
+	}
+
 	// HELPERS
 
 	checkDto(dto: any) {
