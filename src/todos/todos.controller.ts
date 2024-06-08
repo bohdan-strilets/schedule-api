@@ -47,6 +47,11 @@ export class TodosController {
 		return await this.todosService.deleteAll(_id)
 	}
 
+	@Delete('delete-by-day/:dayId')
+	async deleteByDay(@Param('dayId') dayId: string) {
+		return await this.todosService.deleteByDay(dayId)
+	}
+
 	@Get('by-id/:todoId')
 	async getById(@Param('todoId') todoId: string) {
 		return await this.todosService.getById(todoId)

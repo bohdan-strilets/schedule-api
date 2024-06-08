@@ -55,6 +55,11 @@ export class TodosService {
 		return
 	}
 
+	async deleteByDay(dayId: string) {
+		await this.TodoModel.deleteMany({ day: dayId })
+		return
+	}
+
 	async getById(todoId: string) {
 		return await this.checkTodoFromDb(todoId)
 	}
