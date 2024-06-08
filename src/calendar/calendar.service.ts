@@ -17,17 +17,14 @@ export class CalendarService {
 	) {}
 
 	async added(userId: string, dto: AddedDayDto) {
-		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
-
+		this.checkDto(dto)
 		const data = { ...dto, owner: userId }
 		return await this.DayModel.create(data)
 	}
 
 	async update(dayId: string, dto: UpdateDayDto) {
-		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
-
-		const dayFromDb = await this.DayModel.findById(dayId)
-		if (!dayFromDb) throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+		this.checkDto(dto)
+		await this.checkDayFromDb(dayId)
 
 		return await this.DayModel.findByIdAndUpdate(dayId, dto, {
 			new: true,
@@ -35,10 +32,25 @@ export class CalendarService {
 	}
 
 	async delete(dayId: string) {
+		await this.checkDayFromDb(dayId)
+		await this.DayModel.findByIdAndDelete(dayId)
+		return
+	}
+
+	async getById(dayId: string) {
+		return await this.checkDayFromDb(dayId)
+	}
+
+	// HELPERS
+
+	async checkDayFromDb(dayId: string) {
 		const dayFromDb = await this.DayModel.findById(dayId)
 		if (!dayFromDb) throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
 
-		await this.DayModel.findByIdAndDelete(dayId)
-		return
+		return dayFromDb
+	}
+
+	checkDto(dto: any) {
+		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
 	}
 }
