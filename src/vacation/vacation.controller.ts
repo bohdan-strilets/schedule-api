@@ -36,4 +36,9 @@ export class VacationController {
 	async getById(@Param('vacationId') vacationId: string) {
 		return await this.vacationService.getById(vacationId)
 	}
+
+	@Get('all')
+	async getAll() {
+		return await this.vacationService.getAll()
+	}
 }

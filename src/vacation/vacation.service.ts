@@ -72,6 +72,10 @@ export class VacationService {
 		return await this.checkVacationFromDb(vacationId)
 	}
 
+	async getAll() {
+		return await this.VacationModel.find()
+	}
+
 	// HELPERS
 
 	checkDto(dto: any) {
