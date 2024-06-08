@@ -41,8 +41,8 @@ export class CalendarService {
 		return await this.checkDayFromDb(dayId)
 	}
 
-	async getAll() {
-		return await this.DayModel.find()
+	async getAll(userId: string) {
+		return await this.DayModel.find({ owner: userId })
 	}
 
 	// HELPERS

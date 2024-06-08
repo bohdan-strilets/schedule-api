@@ -39,7 +39,7 @@ export class CalendarController {
 	}
 
 	@Get('all')
-	async getAll() {
-		return await this.calendarService.getAll()
+	async getAll(@User('_id') _id: string) {
+		return await this.calendarService.getAll(_id)
 	}
 }

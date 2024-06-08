@@ -38,7 +38,7 @@ export class VacationController {
 	}
 
 	@Get('all')
-	async getAll() {
-		return await this.vacationService.getAll()
+	async getAll(@User('_id') _id: string) {
+		return await this.vacationService.getAll(_id)
 	}
 }

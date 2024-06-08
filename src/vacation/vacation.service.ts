@@ -72,8 +72,8 @@ export class VacationService {
 		return await this.checkVacationFromDb(vacationId)
 	}
 
-	async getAll() {
-		return await this.VacationModel.find()
+	async getAll(userId: string) {
+		return await this.VacationModel.find({ owner: userId })
 	}
 
 	// HELPERS

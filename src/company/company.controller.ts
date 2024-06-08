@@ -42,7 +42,7 @@ export class CompanyController {
 	}
 
 	@Get('all')
-	async getAll() {
-		return await this.companyService.getAll()
+	async getAll(@User('_id') _id: string) {
+		return await this.companyService.getAll(_id)
 	}
 }
