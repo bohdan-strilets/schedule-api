@@ -1,9 +1,21 @@
-import { Module } from '@nestjs/common';
-import { TodosService } from './todos.service';
-import { TodosController } from './todos.controller';
+import { Module } from '@nestjs/common'
+import { TypegooseModule } from 'nestjs-typegoose'
+import { TodoModel } from './models/todo.model'
+import { TodosController } from './todos.controller'
+import { TodosService } from './todos.service'
 
 @Module({
-  controllers: [TodosController],
-  providers: [TodosService],
+	imports: [
+		TypegooseModule.forFeature([
+			{
+				typegooseClass: TodoModel,
+				schemaOptions: {
+					collection: 'Todo',
+				},
+			},
+		]),
+	],
+	controllers: [TodosController],
+	providers: [TodosService],
 })
 export class TodosModule {}
