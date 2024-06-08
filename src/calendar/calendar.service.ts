@@ -33,4 +33,12 @@ export class CalendarService {
 			new: true,
 		})
 	}
+
+	async delete(dayId: string) {
+		const dayFromDb = await this.DayModel.findById(dayId)
+		if (!dayFromDb) throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+
+		await this.DayModel.findByIdAndDelete(dayId)
+		return
+	}
 }

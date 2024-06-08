@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { User } from 'src/user/decorators/user.decorator'
 import { CalendarService } from './calendar.service'
@@ -18,5 +18,10 @@ export class CalendarController {
 	@Patch('update/:dayId')
 	async update(@Body() dto: UpdateDayDto, @Param('dayId') dayId: string) {
 		return await this.calendarService.update(dayId, dto)
+	}
+
+	@Delete('delete/:dayId')
+	async delete(@Param('dayId') dayId: string) {
+		return await this.calendarService.delete(dayId)
 	}
 }
