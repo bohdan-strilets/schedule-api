@@ -9,6 +9,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PasswordModule } from './password/password.module';
 import { CompanyModule } from './company/company.module';
 import { VacationModule } from './vacation/vacation.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
 	imports: [
@@ -25,6 +26,7 @@ import { VacationModule } from './vacation/vacation.module';
 		PasswordModule,
 		CompanyModule,
 		VacationModule,
+		CalendarModule,
 	],
 })
 export class AppModule {}
