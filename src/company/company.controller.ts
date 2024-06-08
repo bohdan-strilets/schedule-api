@@ -36,6 +36,11 @@ export class CompanyController {
 		return await this.companyService.delete(companyId)
 	}
 
+	@Delete('delete-all')
+	async deleteAll(@User('_id') _id: string) {
+		return await this.companyService.deleteAll(_id)
+	}
+
 	@Get('by-id/:companyId')
 	async getById(@Param('companyId') companyId: string) {
 		return await this.companyService.getById(companyId)

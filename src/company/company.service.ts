@@ -39,6 +39,11 @@ export class CompanyService {
 		return
 	}
 
+	async deleteAll(userId: string) {
+		await this.CompanyModel.deleteMany({ owner: userId })
+		return
+	}
+
 	async getById(companyId: string) {
 		return await this.checkCompanyFromDb(companyId)
 	}
