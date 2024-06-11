@@ -585,6 +585,10 @@ export class StatisticsService {
 		await this.StatisticsModel.findOneAndDelete({ owner: userId })
 	}
 
+	async createStatistics(userId: string) {
+		return await this.StatisticsModel.create({ owner: userId })
+	}
+
 	async getStatistics(userId: string) {
 		return await this.StatisticsModel.findOne({ owner: userId })
 	}

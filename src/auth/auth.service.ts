@@ -13,6 +13,7 @@ import { DefaultPosterUrl } from 'src/common/vars/default-poster'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { PasswordService } from 'src/password/password.service'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
+import { StatisticsService } from 'src/statistics/statistics.service'
 import { UserModel } from 'src/user/models/user.model'
 import { UserService } from 'src/user/user.service'
 import { v4 } from 'uuid'
@@ -27,7 +28,8 @@ export class AuthService {
 		private readonly jwtService: JwtService,
 		private readonly sendgridService: SendgridService,
 		private readonly userService: UserService,
-		private readonly passwordService: PasswordService
+		private readonly passwordService: PasswordService,
+		private readonly statisticsService: StatisticsService
 	) {}
 
 	async registration(dto: RegistrationDto) {
@@ -49,6 +51,7 @@ export class AuthService {
 			posterUrls: [DefaultPosterUrl],
 		})
 
+		await this.statisticsService.createStatistics(String(createdUser._id))
 		await this.sendgridService.sendConfirmEmailLetter(
 			createdUser.email,
 			createdUser.activationToken

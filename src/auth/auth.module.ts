@@ -5,6 +5,7 @@ import { TypegooseModule } from 'nestjs-typegoose'
 import { getJWTConfig } from 'src/config/jwt.config'
 import { PasswordModule } from 'src/password/password.module'
 import { SendgridModule } from 'src/sendgrid/sendgrid.module'
+import { StatisticsModule } from 'src/statistics/statistics.module'
 import { UserModel } from 'src/user/models/user.model'
 import { UserModule } from 'src/user/user.module'
 import { AuthController } from './auth.controller'
@@ -30,6 +31,7 @@ import { JwtStrategy } from './strategies/jwt.strategy'
 		SendgridModule,
 		UserModule,
 		PasswordModule,
+		StatisticsModule,
 	],
 	controllers: [AuthController],
 	providers: [AuthService, JwtStrategy],
