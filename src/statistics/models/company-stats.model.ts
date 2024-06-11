@@ -1,9 +1,10 @@
-import { prop } from '@typegoose/typegoose'
+import { modelOptions, prop } from '@typegoose/typegoose'
 
+@modelOptions({ schemaOptions: { _id: false } })
 export class CompanyStatsModel {
-	@prop()
+	@prop({ default: 0 })
 	allCompany: number
 
-	@prop()
+	@prop({ default: 0 })
 	workExperience: number
 }

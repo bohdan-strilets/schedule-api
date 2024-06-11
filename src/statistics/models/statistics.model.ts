@@ -11,12 +11,12 @@ export class StatisticsModel extends TimeStamps {
 	@prop({ ref: () => UserModel })
 	owner: Ref<UserModel>
 
-	@prop()
+	@prop({ default: {} })
 	workStats: WorkStatsModel
 
-	@prop()
+	@prop({ default: {} })
 	todoStats: TodoStatsModel
 
-	@prop()
+	@prop({ default: {} })
 	companyStats: CompanyStatsModel
 }

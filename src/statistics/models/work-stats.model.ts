@@ -1,6 +1,7 @@
-import { prop } from '@typegoose/typegoose'
+import { modelOptions, prop } from '@typegoose/typegoose'
 import { MonthType } from '../types/month.type'
 
+@modelOptions({ schemaOptions: { _id: false } })
 export class WorkStatsModel {
 	@prop({ default: [] })
 	numberWorkDays: MonthType[]
