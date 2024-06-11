@@ -1,6 +1,5 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get, Param } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
-import { User } from 'src/user/decorators/user.decorator'
 import { StatisticsService } from './statistics.service'
 
 @Auth()
@@ -8,8 +7,8 @@ import { StatisticsService } from './statistics.service'
 export class StatisticsController {
 	constructor(private readonly statisticsService: StatisticsService) {}
 
-	@Get('get-statistics')
-	async getStatistics(@User('_id') _id: string) {
-		return await this.statisticsService.getStatistics(_id)
+	@Get('/:statisticsId')
+	async getStatistics(@Param('statisticsId') statisticsId: string) {
+		return await this.statisticsService.getStatistics(statisticsId)
 	}
 }
