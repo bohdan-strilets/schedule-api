@@ -1,4 +1,4 @@
-import { Ref, prop } from '@typegoose/typegoose'
+import { Ref, modelOptions, prop } from '@typegoose/typegoose'
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
 import { DayModel } from 'src/calendar/models/day.model'
 import { UserModel } from 'src/user/models/user.model'
@@ -6,6 +6,7 @@ import { PriorityEnum } from '../enums/priority.enum'
 
 export interface TodoModel extends Base {}
 
+@modelOptions({ schemaOptions: { versionKey: false } })
 export class TodoModel extends TimeStamps {
 	@prop({ ref: () => UserModel })
 	owner: Ref<UserModel>

@@ -1,4 +1,4 @@
-import { Ref, prop } from '@typegoose/typegoose'
+import { Ref, modelOptions, prop } from '@typegoose/typegoose'
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
 import { UserModel } from 'src/user/models/user.model'
 import { ShiftNumberEnum } from '../enums/shift-number.enum'
@@ -6,6 +6,7 @@ import { StatusEnum } from '../enums/status.enum'
 
 export interface DayModel extends Base {}
 
+@modelOptions({ schemaOptions: { versionKey: false } })
 export class DayModel extends TimeStamps {
 	@prop({ ref: () => UserModel })
 	owner: Ref<UserModel>

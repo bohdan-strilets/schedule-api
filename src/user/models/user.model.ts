@@ -1,10 +1,11 @@
-import { prop } from '@typegoose/typegoose'
+import { modelOptions, prop } from '@typegoose/typegoose'
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
 import { GenderEnum } from '../enums/gender.enum'
 import { LocationModel } from './location.model'
 
 export interface UserModel extends Base {}
 
+@modelOptions({ schemaOptions: { versionKey: false } })
 export class UserModel extends TimeStamps {
 	@prop()
 	firstName: string

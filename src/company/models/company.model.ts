@@ -1,9 +1,10 @@
-import { Ref, prop } from '@typegoose/typegoose'
+import { Ref, modelOptions, prop } from '@typegoose/typegoose'
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
 import { UserModel } from 'src/user/models/user.model'
 
 export interface CompanyModel extends Base {}
 
+@modelOptions({ schemaOptions: { versionKey: false } })
 export class CompanyModel extends TimeStamps {
 	@prop({ ref: () => UserModel })
 	owner: Ref<UserModel>
