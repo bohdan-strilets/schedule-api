@@ -1,4 +1,4 @@
-export enum TypeOperationEnum {
+export enum TypeOperation {
 	INCREMENT = 'increment',
 	DECREMENT = 'decrement',
 }

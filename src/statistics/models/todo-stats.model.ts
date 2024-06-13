@@ -1,20 +1,20 @@
 import { modelOptions, prop } from '@typegoose/typegoose'
-import { MonthType } from '../types/month.type'
+import { MonthlyStats } from '../types/monthly-stats.type'
 
 @modelOptions({ schemaOptions: { _id: false } })
 export class TodoStatsModel {
 	@prop({ default: [] })
-	todoAllCreated: MonthType[]
+	todoAllCreated: MonthlyStats[]
 
 	@prop({ default: [] })
-	todoCompleted: MonthType[]
+	todoCompleted: MonthlyStats[]
 
 	@prop({ default: [] })
-	todoWithLowPriority: MonthType[]
+	todoWithLowPriority: MonthlyStats[]
 
 	@prop({ default: [] })
-	todoWithMediumPriority: MonthType[]
+	todoWithMediumPriority: MonthlyStats[]
 
 	@prop({ default: [] })
-	todoWithHighPriority: MonthType[]
+	todoWithHighPriority: MonthlyStats[]
 }

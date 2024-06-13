@@ -1,77 +1,77 @@
 import { modelOptions, prop } from '@typegoose/typegoose'
-import { MonthType } from '../types/month.type'
+import { MonthlyStats } from '../types/monthly-stats.type'
 
 @modelOptions({ schemaOptions: { _id: false } })
 export class WorkStatsModel {
 	@prop({ default: [] })
-	numberWorkDays: MonthType[]
+	numberWorkDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberDaysOff: MonthType[]
+	numberDaysOff: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberVacationDays: MonthType[]
+	numberVacationDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberSickDays: MonthType[]
+	numberSickDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberAdditionalWorkDays: MonthType[]
+	numberAdditionalWorkDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberWorkHours: MonthType[]
+	numberWorkHours: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberFreeHours: MonthType[]
+	numberFreeHours: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberVacationHours: MonthType[]
+	numberVacationHours: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberSickHours: MonthType[]
+	numberSickHours: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberAdditionalWorkHours: MonthType[]
+	numberAdditionalWorkHours: MonthlyStats[]
 
 	@prop({ default: [] })
-	totalDays: MonthType[]
+	totalDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	totalHours: MonthType[]
+	totalHours: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberFirstShifts: MonthType[]
+	numberFirstShifts: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberSecondShifts: MonthType[]
+	numberSecondShifts: MonthlyStats[]
 
 	@prop({ default: [] })
-	numberNightHours: MonthType[]
+	numberNightHours: MonthlyStats[]
 
 	@prop({ default: [] })
-	grossAmountMoneyForWorkDays: MonthType[]
+	grossAmountMoneyForWorkDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	netAmountMoneyForWorkDays: MonthType[]
+	netAmountMoneyForWorkDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	grossAmountMoneyForVacationDays: MonthType[]
+	grossAmountMoneyForVacationDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	netAmountMoneyForVacationDays: MonthType[]
+	netAmountMoneyForVacationDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	grossAmountMoneyForSickDays: MonthType[]
+	grossAmountMoneyForSickDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	netAmountMoneyForSickDays: MonthType[]
+	netAmountMoneyForSickDays: MonthlyStats[]
 
 	@prop({ default: [] })
-	totalMoneyEarnedGross: MonthType[]
+	totalMoneyEarnedGross: MonthlyStats[]
 
 	@prop({ default: [] })
-	totalMoneyEarnedNet: MonthType[]
+	totalMoneyEarnedNet: MonthlyStats[]
 
 	@prop({ default: [] })
-	totalTaxPaid: MonthType[]
+	totalTaxPaid: MonthlyStats[]
 }

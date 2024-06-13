@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { TypegooseModule } from 'nestjs-typegoose'
+import { StatisticsModule } from 'src/statistics/statistics.module'
 import { CalendarController } from './calendar.controller'
 import { CalendarService } from './calendar.service'
 import { DayModel } from './models/day.model'
@@ -14,6 +15,7 @@ import { DayModel } from './models/day.model'
 				},
 			},
 		]),
+		StatisticsModule,
 	],
 	controllers: [CalendarController],
 	providers: [CalendarService],
