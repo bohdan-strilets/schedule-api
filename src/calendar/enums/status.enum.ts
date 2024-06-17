@@ -1,4 +1,4 @@
-export enum StatusEnum {
+export enum Status {
 	WORK = 'work',
 	DAY_OFF = 'day-off',
 	VACATION = 'vacation',

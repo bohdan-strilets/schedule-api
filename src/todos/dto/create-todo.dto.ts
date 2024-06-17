@@ -10,7 +10,7 @@ import {
 	MAX_TASK_LENGTH,
 	MIN_TASK_LENGTH,
 } from 'src/common/vars/validation-rules'
-import { PriorityEnum } from '../enums/priority.enum'
+import { Priority } from '../enums/priority.enum'
 
 export class CreateTodoDto {
 	@IsString()
@@ -22,9 +22,9 @@ export class CreateTodoDto {
 	task: string
 
 	@IsString()
-	@IsIn(Object.values(PriorityEnum))
+	@IsIn(Object.values(Priority))
 	@IsOptional()
-	priority?: PriorityEnum
+	priority?: Priority
 
 	@IsDateString()
 	@IsOptional()

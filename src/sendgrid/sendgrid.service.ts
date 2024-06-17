@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import * as handlebars from 'handlebars'
 import { join } from 'path'
 import { EmailType } from './types/email.type'
-import { HbsTemplateType } from './types/hbs-template.type'
+import { HbsTemplate } from './types/hbs-template.type'
 
 @Injectable()
 export class SendgridService {
@@ -23,7 +23,7 @@ export class SendgridService {
 
 	private renderTemplate(
 		templatePath: string,
-		variables?: HbsTemplateType
+		variables?: HbsTemplate
 	): string {
 		const templateSource = fs.readFileSync(templatePath, 'utf8')
 		const template = handlebars.compile(templateSource)

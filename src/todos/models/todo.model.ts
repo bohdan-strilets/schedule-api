@@ -2,7 +2,7 @@ import { Ref, modelOptions, prop } from '@typegoose/typegoose'
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
 import { DayModel } from 'src/calendar/models/day.model'
 import { UserModel } from 'src/user/models/user.model'
-import { PriorityEnum } from '../enums/priority.enum'
+import { Priority } from '../enums/priority.enum'
 
 export interface TodoModel extends Base {}
 
@@ -17,8 +17,8 @@ export class TodoModel extends TimeStamps {
 	@prop({ required: true })
 	task: string
 
-	@prop({ default: PriorityEnum.LOW })
-	priority?: PriorityEnum
+	@prop({ default: Priority.LOW })
+	priority?: Priority
 
 	@prop({ default: false })
 	isCompleted?: boolean

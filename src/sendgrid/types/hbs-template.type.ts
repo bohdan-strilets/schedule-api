@@ -1,1 +1,1 @@
-export type HbsTemplateType = { [key: string]: string }
+export type HbsTemplate = { [key: string]: string }

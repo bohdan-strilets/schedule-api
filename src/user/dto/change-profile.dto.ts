@@ -13,7 +13,7 @@ import {
 	MIN_DESCRIPTION_LENGTH,
 	MIN_NAME_LENGTH,
 } from 'src/common/vars/validation-rules'
-import { GenderEnum } from '../enums/gender.enum'
+import { Gender } from '../enums/gender.enum'
 
 export class ChangeProfileDto {
 	@IsString()
@@ -44,9 +44,9 @@ export class ChangeProfileDto {
 	phoneNumber?: string
 
 	@IsString()
-	@IsIn(Object.values(GenderEnum))
+	@IsIn(Object.values(Gender))
 	@IsOptional()
-	gender?: GenderEnum
+	gender?: Gender
 
 	@IsString()
 	@IsOptional()

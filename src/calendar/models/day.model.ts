@@ -1,8 +1,8 @@
 import { Ref, modelOptions, prop } from '@typegoose/typegoose'
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
 import { UserModel } from 'src/user/models/user.model'
-import { ShiftNumberEnum } from '../enums/shift-number.enum'
-import { StatusEnum } from '../enums/status.enum'
+import { ShiftNumber } from '../enums/shift-number.enum'
+import { Status } from '../enums/status.enum'
 
 export interface DayModel extends Base {}
 
@@ -15,7 +15,7 @@ export class DayModel extends TimeStamps {
 	date: Date
 
 	@prop({ required: true })
-	status: StatusEnum
+	status: Status
 
 	@prop({ default: 0 })
 	numberHours?: number
@@ -23,8 +23,8 @@ export class DayModel extends TimeStamps {
 	@prop()
 	timeRange?: string
 
-	@prop({ default: ShiftNumberEnum.SHIFT_0 })
-	shiftNumber?: ShiftNumberEnum
+	@prop({ default: ShiftNumber.SHIFT_0 })
+	shiftNumber?: ShiftNumber
 
 	@prop({ default: false })
 	isAdditional?: boolean

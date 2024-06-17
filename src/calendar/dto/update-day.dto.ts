@@ -14,14 +14,14 @@ import {
 	MIN_EARNING,
 	MIN_NUMBER_HOURS,
 } from 'src/common/vars/validation-rules'
-import { ShiftNumberEnum } from '../enums/shift-number.enum'
-import { StatusEnum } from '../enums/status.enum'
+import { ShiftNumber } from '../enums/shift-number.enum'
+import { Status } from '../enums/status.enum'
 
 export class UpdateDayDto {
 	@IsString()
-	@IsIn(Object.values(StatusEnum))
+	@IsIn(Object.values(Status))
 	@IsOptional()
-	status: StatusEnum
+	status: Status
 
 	@IsPositive()
 	@IsOptional()
@@ -34,9 +34,9 @@ export class UpdateDayDto {
 	timeRange?: string
 
 	@IsNumber()
-	@IsIn(Object.values(ShiftNumberEnum))
+	@IsIn(Object.values(ShiftNumber))
 	@IsOptional()
-	shiftNumber?: ShiftNumberEnum
+	shiftNumber?: ShiftNumber
 
 	@IsBoolean()
 	@IsOptional()

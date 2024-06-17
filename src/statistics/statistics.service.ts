@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
-import { ShiftNumberEnum } from 'src/calendar/enums/shift-number.enum'
-import { StatusEnum } from 'src/calendar/enums/status.enum'
+import { ShiftNumber } from 'src/calendar/enums/shift-number.enum'
+import { Status } from 'src/calendar/enums/status.enum'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { TypeOperation } from './enums/type-operation.enum'
 import { WorkStatFields } from './enums/work-stat-fields.enum'
@@ -122,7 +122,7 @@ export class StatisticsService {
 		const changeStatOptions = { date, userId, type }
 		const nightHours = this.calculateNightHours({ timeRange, numberHours })
 
-		if (status === StatusEnum.WORK) {
+		if (status === Status.WORK) {
 			this.changeStatField({
 				...changeStatOptions,
 				value: 1,
@@ -169,7 +169,7 @@ export class StatisticsService {
 				fieldName: WorkStatFields.TOTAL_TAX_PAID,
 			})
 		}
-		if (status === StatusEnum.WORK && isAdditional) {
+		if (status === Status.WORK && isAdditional) {
 			this.changeStatField({
 				...changeStatOptions,
 				value: 1,
@@ -181,7 +181,7 @@ export class StatisticsService {
 				fieldName: WorkStatFields.NUMBER_ADDITIONAL_WORK_HOURS,
 			})
 		}
-		if (status === StatusEnum.DAY_OFF) {
+		if (status === Status.DAY_OFF) {
 			this.changeStatField({
 				...changeStatOptions,
 				value: 1,
@@ -193,7 +193,7 @@ export class StatisticsService {
 				fieldName: WorkStatFields.NUMBER_FREE_HOURS,
 			})
 		}
-		if (status === StatusEnum.VACATION) {
+		if (status === Status.VACATION) {
 			this.changeStatField({
 				...changeStatOptions,
 				value: 1,
@@ -240,7 +240,7 @@ export class StatisticsService {
 				fieldName: WorkStatFields.TOTAL_TAX_PAID,
 			})
 		}
-		if (status === StatusEnum.SICK_LEAVE) {
+		if (status === Status.SICK_LEAVE) {
 			this.changeStatField({
 				...changeStatOptions,
 				value: 1,
@@ -287,14 +287,14 @@ export class StatisticsService {
 				fieldName: WorkStatFields.TOTAL_TAX_PAID,
 			})
 		}
-		if (status === StatusEnum.WORK && shiftNumber === ShiftNumberEnum.SHIFT_1) {
+		if (status === Status.WORK && shiftNumber === ShiftNumber.SHIFT_1) {
 			this.changeStatField({
 				...changeStatOptions,
 				value: 1,
 				fieldName: WorkStatFields.NUMBER_FIRST_SHIFTS,
 			})
 		}
-		if (status === StatusEnum.WORK && shiftNumber === ShiftNumberEnum.SHIFT_2) {
+		if (status === Status.WORK && shiftNumber === ShiftNumber.SHIFT_2) {
 			this.changeStatField({
 				...changeStatOptions,
 				value: 1,
@@ -302,8 +302,8 @@ export class StatisticsService {
 			})
 		}
 		if (
-			status === StatusEnum.WORK &&
-			shiftNumber === ShiftNumberEnum.SHIFT_2 &&
+			status === Status.WORK &&
+			shiftNumber === ShiftNumber.SHIFT_2 &&
 			nightHours > 0
 		) {
 			this.changeStatField({

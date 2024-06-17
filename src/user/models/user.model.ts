@@ -1,6 +1,6 @@
 import { modelOptions, prop } from '@typegoose/typegoose'
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
-import { GenderEnum } from '../enums/gender.enum'
+import { Gender } from '../enums/gender.enum'
 import { LocationModel } from './location.model'
 
 export interface UserModel extends Base {}
@@ -31,8 +31,8 @@ export class UserModel extends TimeStamps {
 	@prop()
 	password: string
 
-	@prop({ default: GenderEnum.OTHER })
-	gender: GenderEnum
+	@prop({ default: Gender.OTHER })
+	gender: Gender
 
 	@prop()
 	description: string
