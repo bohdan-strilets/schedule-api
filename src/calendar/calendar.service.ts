@@ -6,7 +6,6 @@ import {
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
 import { ErrorMessages } from 'src/common/vars/error-messages'
-import { TypeOperation } from 'src/statistics/enums/type-operation.enum'
 import { StatisticsService } from 'src/statistics/statistics.service'
 import { AddedDayDto } from './dto/added-day.dto'
 import { UpdateDayDto } from './dto/update-day.dto'
@@ -22,13 +21,7 @@ export class CalendarService {
 	async added(userId: string, dto: AddedDayDto) {
 		this.checkDto(dto)
 		const data = { ...dto, owner: userId }
-		this.statisticsService.changeStatField({
-			date: dto.date,
-			type: TypeOperation.INCREMENT,
-			userId,
-			value: 1,
-			fieldName: 'numberWorkDays',
-		})
+
 		return await this.DayModel.create(data)
 	}
 

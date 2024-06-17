@@ -1,4 +1,4 @@
-export enum StatFieldsName {
+export enum WorkStatFields {
 	NUMBER_WORK_DAYS = 'numberWorkDays',
 	NUMBER_DAYS_OFF = 'numberDaysOff',
 	NUMBER_VACATION_DAYS = 'numberVacationDays',
