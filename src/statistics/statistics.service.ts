@@ -12,9 +12,9 @@ import { ChangeStatField } from './types/change-stat-field.type'
 import { DateComponents } from './types/date-components .type'
 import { DefaultValue } from './types/default-value.type'
 import { FoundValue } from './types/found-value.type'
+import { GetOldValues } from './types/get-old-values.type'
 import { MonthlyStats } from './types/monthly-stats.type'
 import { Operands } from './types/operands .type'
-import { SetEmptyValues } from './types/set-empty-values.type'
 import { UpdateStat } from './types/update-stat,type'
 import { UpdateValue } from './types/update-value.type'
 
@@ -41,7 +41,7 @@ export class StatisticsService {
 
 	foundValue({ field, monthYear }: FoundValue) {
 		return field.find(
-			(item) => item.month === monthYear.month && item.year === monthYear.year
+			(item) => item.month === monthYear.month || item.year === monthYear.year
 		)
 	}
 
@@ -55,16 +55,10 @@ export class StatisticsService {
 		return { month: monthYear.month, year: monthYear.year, value }
 	}
 
-	setEmptyValues({ filteredNames, workStats, monthYear }: SetEmptyValues) {
-		for (const name of filteredNames) {
-			const field: MonthlyStats[] = workStats[name]
-			const existingValue = this.foundValue({ field, monthYear })
-
-			if (!existingValue) {
-				const defaultValue = this.defaultValue({ monthYear, value: 0 })
-				field.push(defaultValue)
-			}
-		}
+	getOldValues({ field, foundValue }: GetOldValues) {
+		return field.filter(
+			(item) => item.month !== foundValue.month || item.year !== foundValue.year
+		)
 	}
 
 	async changeStatField(options: ChangeStatField) {
@@ -74,20 +68,25 @@ export class StatisticsService {
 
 		const workStats = statistics.workStats
 		const field: MonthlyStats[] = workStats[fieldName]
+
 		const monthYear = this.getDate(new Date(date))
 		const foundValue = this.foundValue({ field, monthYear })
-		const fieldNames = Object.values(WorkStatFields)
-		const filteredNames = fieldNames.filter((name) => name !== fieldName)
+
+		const updateFieldName = `workStats.${fieldName}`
+		let result: MonthlyStats[] = []
 
 		if (foundValue) {
-			foundValue.value = this.updateValue({ foundValue, type, value })
+			const newValue = this.updateValue({ foundValue, type, value })
+			const updatedValue = { ...foundValue, value: newValue }
+			const oldValue = this.getOldValues({ field, foundValue })
+			result = [...oldValue, updatedValue]
 		} else {
 			const newValue = this.defaultValue({ monthYear, value })
-			field.push(newValue)
-			// this.setEmptyValues({ filteredNames, workStats, monthYear })
+			result = [...field, newValue]
 		}
 
-		await statistics.save()
+		const updateObject = { [updateFieldName]: result }
+		await this.StatisticsModel.findByIdAndUpdate(statistics._id, updateObject)
 	}
 
 	calculateNightHours({ timeRange, numberHours }: CalculateNightHours) {
