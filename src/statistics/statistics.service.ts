@@ -320,6 +320,7 @@ export class StatisticsService {
 	}
 
 	async getStatistics(statId: string) {
+		if (!statId) new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
 		return await this.StatisticsModel.findById(statId)
 	}
 }
