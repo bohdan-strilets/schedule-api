@@ -319,14 +319,16 @@ export class StatisticsService {
 		return await this.StatisticsModel.create({ owner: userId })
 	}
 
-	async getStatistics(statId: string) {
+	async getStat(statId: string) {
 		if (!statId) new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
 		return await this.StatisticsModel.findById(statId)
 	}
 
-	async deleteStatistics(statId: string) {
-		if (!statId) new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
-		await this.StatisticsModel.findByIdAndDelete(statId)
+	async delete(userId: string) {
+		const statistics = await this.StatisticsModel.findOne({ owner: userId })
+		if (!statistics) new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+
+		await this.StatisticsModel.findByIdAndDelete(statistics._id)
 		return
 	}
 }

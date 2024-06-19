@@ -17,5 +17,6 @@ import { CompanyModel } from './models/company.model'
 	],
 	controllers: [CompanyController],
 	providers: [CompanyService],
+	exports: [CompanyService],
 })
 export class CompanyModule {}

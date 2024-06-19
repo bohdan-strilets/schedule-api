@@ -6,12 +6,17 @@ import {
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import * as fs from 'fs'
 import { InjectModel } from 'nestjs-typegoose'
+import { CalendarService } from 'src/calendar/calendar.service'
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service'
 import { FileType } from 'src/cloudinary/enums/file-type.enum'
 import { CloudinaryFolders } from 'src/common/vars/cloudinary-folders'
 import { ErrorMessages } from 'src/common/vars/error-messages'
+import { CompanyService } from 'src/company/company.service'
 import { PasswordService } from 'src/password/password.service'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
+import { StatisticsService } from 'src/statistics/statistics.service'
+import { TodosService } from 'src/todos/todos.service'
+import { VacationService } from 'src/vacation/vacation.service'
 import { v4 } from 'uuid'
 import { ChangeAddressDto } from './dto/change-address.dto'
 import { ChangePasswordDto } from './dto/change-password.dto'
@@ -26,7 +31,12 @@ export class UserService {
 		@InjectModel(UserModel) private readonly UserModel: ModelType<UserModel>,
 		private readonly sendgridService: SendgridService,
 		private readonly passwordService: PasswordService,
-		private readonly cloudinaryService: CloudinaryService
+		private readonly cloudinaryService: CloudinaryService,
+		private readonly calendarService: CalendarService,
+		private readonly companyService: CompanyService,
+		private readonly statisticsService: StatisticsService,
+		private readonly todosService: TodosService,
+		private readonly vacationService: VacationService
 	) {}
 
 	async activationEmail(activationToken: string) {
@@ -185,6 +195,12 @@ export class UserService {
 
 		const posters = user.posterUrls
 		await this.deleteUserFiles(posters)
+
+		await this.companyService.deleteAll(userId)
+		await this.calendarService.deleteAll(userId)
+		await this.statisticsService.delete(userId)
+		await this.todosService.deleteAll(userId)
+		await this.vacationService.deleteAll(userId)
 
 		return
 	}

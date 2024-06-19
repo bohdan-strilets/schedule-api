@@ -8,12 +8,12 @@ export class StatisticsController {
 	constructor(private readonly statisticsService: StatisticsService) {}
 
 	@Get('/:statId')
-	async getStatistics(@Param('statId') statId: string) {
-		return await this.statisticsService.getStatistics(statId)
+	async getStat(@Param('statId') statId: string) {
+		return await this.statisticsService.getStat(statId)
 	}
 
 	@Delete('/:statId')
-	async deleteStatistics(@Param('statId') statId: string) {
-		return await this.statisticsService.deleteStatistics(statId)
+	async delete(@Param('statId') statId: string) {
+		return await this.statisticsService.delete(statId)
 	}
 }

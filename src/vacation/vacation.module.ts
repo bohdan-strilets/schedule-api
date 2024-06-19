@@ -17,5 +17,6 @@ import { VacationService } from './vacation.service'
 	],
 	controllers: [VacationController],
 	providers: [VacationService],
+	exports: [VacationService],
 })
 export class VacationModule {}

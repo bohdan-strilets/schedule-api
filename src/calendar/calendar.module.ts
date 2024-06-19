@@ -19,5 +19,6 @@ import { DayModel } from './models/day.model'
 	],
 	controllers: [CalendarController],
 	providers: [CalendarService],
+	exports: [CalendarService],
 })
 export class CalendarModule {}
