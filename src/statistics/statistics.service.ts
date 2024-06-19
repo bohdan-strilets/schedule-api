@@ -323,4 +323,10 @@ export class StatisticsService {
 		if (!statId) new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
 		return await this.StatisticsModel.findById(statId)
 	}
+
+	async deleteStatistics(statId: string) {
+		if (!statId) new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+		await this.StatisticsModel.findByIdAndDelete(statId)
+		return
+	}
 }

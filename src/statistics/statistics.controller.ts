@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common'
+import { Controller, Delete, Get, Param } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { StatisticsService } from './statistics.service'
 
@@ -10,5 +10,10 @@ export class StatisticsController {
 	@Get('/:statId')
 	async getStatistics(@Param('statId') statId: string) {
 		return await this.statisticsService.getStatistics(statId)
+	}
+
+	@Delete('/:statId')
+	async deleteStatistics(@Param('statId') statId: string) {
+		return await this.statisticsService.deleteStatistics(statId)
 	}
 }
