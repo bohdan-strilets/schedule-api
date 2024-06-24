@@ -7,7 +7,7 @@ import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { TypeOperation } from 'src/statistics/enums/type-operation.enum'
-import { StatisticsService } from 'src/statistics/statistics.service'
+import { StatisticsOperationsService } from 'src/statistics/statistics-operations.service'
 import { AddedDayDto } from './dto/added-day.dto'
 import { UpdateDayDto } from './dto/update-day.dto'
 import { DayModel } from './models/day.model'
@@ -16,14 +16,14 @@ import { DayModel } from './models/day.model'
 export class CalendarService {
 	constructor(
 		@InjectModel(DayModel) private readonly DayModel: ModelType<DayModel>,
-		private readonly statisticsService: StatisticsService
+		private readonly statisticsOperations: StatisticsOperationsService
 	) {}
 
 	async added(userId: string, dto: AddedDayDto) {
 		this.checkDto(dto)
 		const data = { ...dto, owner: userId }
 
-		await this.statisticsService.updateStat({
+		await this.statisticsOperations.updateStat({
 			userId,
 			type: TypeOperation.INCREMENT,
 			dto,
@@ -35,19 +35,19 @@ export class CalendarService {
 	async update(dayId: string, dto: UpdateDayDto, userId: string) {
 		this.checkDto(dto)
 		const day = await this.checkDayFromDb(dayId)
-		const dayFromDb = this.statisticsService.getDataForStat(day)
+		const dayFromDb = this.statisticsOperations.getDataForStat(day)
 
 		if (
 			dayFromDb.status !== dto.status ||
 			dayFromDb.shiftNumber !== dto.shiftNumber ||
 			dayFromDb.isAdditional !== dto.isAdditional
 		) {
-			await this.statisticsService.updateStat({
+			await this.statisticsOperations.updateStat({
 				userId,
 				type: TypeOperation.DECREMENT,
 				dto: dayFromDb,
 			})
-			await this.statisticsService.updateStat({
+			await this.statisticsOperations.updateStat({
 				userId,
 				type: TypeOperation.INCREMENT,
 				dto: { date: day.date, ...dto },
@@ -62,9 +62,9 @@ export class CalendarService {
 	async delete(dayId: string, userId: string) {
 		await this.checkDayFromDb(dayId)
 		const deletedDay = await this.DayModel.findByIdAndDelete(dayId)
-		const dayInformation = this.statisticsService.getDataForStat(deletedDay)
+		const dayInformation = this.statisticsOperations.getDataForStat(deletedDay)
 
-		await this.statisticsService.updateStat({
+		await this.statisticsOperations.updateStat({
 			userId,
 			type: TypeOperation.DECREMENT,
 			dto: { date: deletedDay.date, ...dayInformation },

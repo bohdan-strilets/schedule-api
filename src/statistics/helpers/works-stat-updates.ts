@@ -1,38 +1,22 @@
 import { ShiftNumber } from 'src/calendar/enums/shift-number.enum'
 import { Status } from 'src/calendar/enums/status.enum'
 import { WorkStatFields } from '../enums/work-stat-fields.enum'
-
-// Тип для пары [WorkStatFields, значение]
-type FieldUpdate = [WorkStatFields, number]
-
-// Тип для объекта с условием и массивом пар
-interface UpdateEntry {
-	condition: boolean
-	fields: FieldUpdate[]
-}
-
-// Тип для массива объектов UpdateEntry
-type UpdateList = UpdateEntry[]
+import { UpdateEntry, WorkStatUpdates } from '../types/work-stat-updates.type'
 
 export const getWorkStatUpdates = ({
-	status,
-	numberHours,
-	grossEarning,
-	netEarning,
+	dto,
 	tax,
-	isAdditional,
-	shiftNumber,
 	nightHours,
-}: {
-	status: Status
-	numberHours: number
-	grossEarning: number
-	netEarning: number
-	tax: number
-	isAdditional: boolean
-	shiftNumber: number
-	nightHours: number
-}): UpdateList => {
+}: WorkStatUpdates): UpdateEntry[] => {
+	const {
+		status,
+		numberHours,
+		grossEarning,
+		netEarning,
+		isAdditional,
+		shiftNumber,
+	} = dto
+
 	return [
 		{
 			condition: status === Status.WORK,

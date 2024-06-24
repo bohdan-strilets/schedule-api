@@ -51,7 +51,7 @@ export class AuthService {
 			posterUrls: [DefaultPosterUrl],
 		})
 
-		await this.statisticsService.createStatistics(String(createdUser._id))
+		await this.statisticsService.create(String(createdUser._id))
 		await this.sendgridService.sendConfirmEmailLetter(
 			createdUser.email,
 			createdUser.activationToken

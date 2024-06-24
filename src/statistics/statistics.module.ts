@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { TypegooseModule } from 'nestjs-typegoose'
 import { StatisticsModel } from './models/statistics.model'
+import { StatisticsOperationsService } from './statistics-operations.service'
 import { StatisticsController } from './statistics.controller'
 import { StatisticsService } from './statistics.service'
 
@@ -16,7 +17,7 @@ import { StatisticsService } from './statistics.service'
 		]),
 	],
 	controllers: [StatisticsController],
-	providers: [StatisticsService],
-	exports: [StatisticsService],
+	providers: [StatisticsService, StatisticsOperationsService],
+	exports: [StatisticsService, StatisticsOperationsService],
 })
 export class StatisticsModule {}

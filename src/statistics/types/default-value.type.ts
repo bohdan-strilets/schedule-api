@@ -1,4 +1,4 @@
-import { DateComponents } from './date-components .type'
+import { DateComponents } from './date-components.type'
 
 export type DefaultValue = {
 	monthYear: DateComponents
