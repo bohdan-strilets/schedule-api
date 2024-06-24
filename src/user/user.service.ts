@@ -221,7 +221,7 @@ export class UserService {
 
 	// HELPERS
 
-	returnUserFields(user: UserModel) {
+	private returnUserFields(user: UserModel) {
 		return {
 			_id: user._id,
 			firstName: user.firstName,
@@ -241,15 +241,15 @@ export class UserService {
 		}
 	}
 
-	async findByEmail(email: string) {
+	private async findByEmail(email: string) {
 		return this.UserModel.findOne({ email }).exec()
 	}
 
-	async findById(id: string) {
+	private async findById(id: string) {
 		return this.UserModel.findById(id).exec()
 	}
 
-	async deleteUserFiles(arrPath: string[]) {
+	private async deleteUserFiles(arrPath: string[]) {
 		if (arrPath.length > 1) {
 			const avatarsFolderPath = this.cloudinaryService.getFolderPath(arrPath[1])
 

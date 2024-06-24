@@ -77,14 +77,14 @@ export class TodosService {
 
 	// HELPERS
 
-	async checkTodoFromDb(todoId: string) {
+	private async checkTodoFromDb(todoId: string) {
 		const todoFromDb = await this.TodoModel.findById(todoId)
 		if (!todoFromDb) throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
 
 		return todoFromDb
 	}
 
-	checkDto(dto: any) {
+	private checkDto(dto: any) {
 		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
 	}
 }

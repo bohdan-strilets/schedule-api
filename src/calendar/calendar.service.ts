@@ -88,14 +88,14 @@ export class CalendarService {
 
 	// HELPERS
 
-	async checkDayFromDb(dayId: string) {
+	private async checkDayFromDb(dayId: string) {
 		const dayFromDb = await this.DayModel.findById(dayId)
 		if (!dayFromDb) throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
 
 		return dayFromDb
 	}
 
-	checkDto(dto: any) {
+	private checkDto(dto: any) {
 		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
 	}
 }

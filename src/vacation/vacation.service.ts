@@ -89,11 +89,11 @@ export class VacationService {
 
 	// HELPERS
 
-	checkDto(dto: any) {
+	private checkDto(dto: any) {
 		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
 	}
 
-	async checkVacationFromDb(vacationId: string) {
+	private async checkVacationFromDb(vacationId: string) {
 		const vacationFromDb = await this.VacationModel.findById(vacationId)
 		if (!vacationFromDb)
 			throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)

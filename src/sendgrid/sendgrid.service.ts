@@ -30,7 +30,7 @@ export class SendgridService {
 		return template(variables)
 	}
 
-	async sendEmail(data: EmailType) {
+	private async sendEmail(data: EmailType) {
 		const email = { ...data, from: process.env.SENDGRID_OWNER }
 		await sendgrid.send(email)
 		return

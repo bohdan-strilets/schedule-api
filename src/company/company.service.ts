@@ -54,7 +54,7 @@ export class CompanyService {
 
 	// HELPERS
 
-	async checkCompanyFromDb(companyId: string) {
+	private async checkCompanyFromDb(companyId: string) {
 		const companyFromDb = await this.CompanyModel.findById(companyId)
 		if (!companyFromDb)
 			throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
@@ -62,7 +62,7 @@ export class CompanyService {
 		return companyFromDb
 	}
 
-	checkDto(dto: any) {
+	private checkDto(dto: any) {
 		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
 	}
 }
