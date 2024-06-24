@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
-import { ShiftNumber } from 'src/calendar/enums/shift-number.enum'
-import { Status } from 'src/calendar/enums/status.enum'
+import { DayModel } from 'src/calendar/models/day.model'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { TypeOperation } from './enums/type-operation.enum'
-import { WorkStatFields } from './enums/work-stat-fields.enum'
+import { getWorkStatUpdates } from './helpers/works-stat-updates'
 import { StatisticsModel } from './models/statistics.model'
 import { CalculateNightHours } from './types/calculate-night-hours.type'
 import { ChangeStatField } from './types/change-stat-field.type'
@@ -41,7 +40,7 @@ export class StatisticsService {
 
 	foundValue({ field, monthYear }: FoundValue) {
 		return field.find(
-			(item) => item.month === monthYear.month || item.year === monthYear.year
+			(item) => item.month === monthYear.month && item.year === monthYear.year
 		)
 	}
 
@@ -120,196 +119,36 @@ export class StatisticsService {
 		const tax = grossEarning - netEarning
 		const changeStatOptions = { date, userId, type }
 		const nightHours = this.calculateNightHours({ timeRange, numberHours })
+		const updates = getWorkStatUpdates({
+			status,
+			numberHours,
+			grossEarning,
+			netEarning,
+			tax,
+			isAdditional,
+			shiftNumber,
+			nightHours,
+		})
 
-		if (status === Status.WORK) {
-			this.changeStatField({
-				...changeStatOptions,
-				value: 1,
-				fieldName: WorkStatFields.NUMBER_WORK_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: numberHours,
-				fieldName: WorkStatFields.NUMBER_WORK_HOURS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: 1,
-				fieldName: WorkStatFields.TOTAL_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: numberHours,
-				fieldName: WorkStatFields.TOTAL_HOURS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: grossEarning,
-				fieldName: WorkStatFields.GROSS_AMOUNT_MONEY_FOR_WORK_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: netEarning,
-				fieldName: WorkStatFields.NET_AMOUNT_MONEY_FOR_WORK_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: grossEarning,
-				fieldName: WorkStatFields.TOTAL_MONEY_EARNED_GROSS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: netEarning,
-				fieldName: WorkStatFields.TOTAL_MONEY_EARNED_NET,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: tax,
-				fieldName: WorkStatFields.TOTAL_TAX_PAID,
-			})
+		for (const update of updates) {
+			if (update.condition) {
+				for (const [fieldName, value] of update.fields) {
+					await this.changeStatField({ ...changeStatOptions, fieldName, value })
+				}
+			}
 		}
-		if (status === Status.WORK && isAdditional) {
-			this.changeStatField({
-				...changeStatOptions,
-				value: 1,
-				fieldName: WorkStatFields.NUMBER_ADDITIONAL_WORK_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: numberHours,
-				fieldName: WorkStatFields.NUMBER_ADDITIONAL_WORK_HOURS,
-			})
-		}
-		if (status === Status.DAY_OFF) {
-			this.changeStatField({
-				...changeStatOptions,
-				value: 1,
-				fieldName: WorkStatFields.NUMBER_DAYS_OFF,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: numberHours,
-				fieldName: WorkStatFields.NUMBER_FREE_HOURS,
-			})
-		}
-		if (status === Status.VACATION) {
-			this.changeStatField({
-				...changeStatOptions,
-				value: 1,
-				fieldName: WorkStatFields.NUMBER_VACATION_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: numberHours,
-				fieldName: WorkStatFields.NUMBER_VACATION_HOURS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: 1,
-				fieldName: WorkStatFields.TOTAL_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: numberHours,
-				fieldName: WorkStatFields.TOTAL_HOURS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: grossEarning,
-				fieldName: WorkStatFields.GROSS_AMOUNT_MONEY_FOR_VACATION_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: netEarning,
-				fieldName: WorkStatFields.NET_AMOUNT_MONEY_FOR_VACATION_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: grossEarning,
-				fieldName: WorkStatFields.TOTAL_MONEY_EARNED_GROSS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: netEarning,
-				fieldName: WorkStatFields.TOTAL_MONEY_EARNED_NET,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: tax,
-				fieldName: WorkStatFields.TOTAL_TAX_PAID,
-			})
-		}
-		if (status === Status.SICK_LEAVE) {
-			this.changeStatField({
-				...changeStatOptions,
-				value: 1,
-				fieldName: WorkStatFields.NUMBER_SICK_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: numberHours,
-				fieldName: WorkStatFields.NUMBER_SICK_HOURS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: 1,
-				fieldName: WorkStatFields.TOTAL_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: numberHours,
-				fieldName: WorkStatFields.TOTAL_HOURS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: grossEarning,
-				fieldName: WorkStatFields.GROSS_AMOUNT_MONEY_FOR_SICK_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: netEarning,
-				fieldName: WorkStatFields.NET_AMOUNT_MONEY_FOR_SICK_DAYS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: grossEarning,
-				fieldName: WorkStatFields.TOTAL_MONEY_EARNED_GROSS,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: netEarning,
-				fieldName: WorkStatFields.TOTAL_MONEY_EARNED_NET,
-			})
-			this.changeStatField({
-				...changeStatOptions,
-				value: tax,
-				fieldName: WorkStatFields.TOTAL_TAX_PAID,
-			})
-		}
-		if (status === Status.WORK && shiftNumber === ShiftNumber.SHIFT_1) {
-			this.changeStatField({
-				...changeStatOptions,
-				value: 1,
-				fieldName: WorkStatFields.NUMBER_FIRST_SHIFTS,
-			})
-		}
-		if (status === Status.WORK && shiftNumber === ShiftNumber.SHIFT_2) {
-			this.changeStatField({
-				...changeStatOptions,
-				value: 1,
-				fieldName: WorkStatFields.NUMBER_SECOND_SHIFT,
-			})
-		}
-		if (
-			status === Status.WORK &&
-			shiftNumber === ShiftNumber.SHIFT_2 &&
-			nightHours > 0
-		) {
-			this.changeStatField({
-				...changeStatOptions,
-				value: nightHours,
-				fieldName: WorkStatFields.NUMBER_NIGHT_HOURS,
-			})
+	}
+
+	getDataForStat(dayInformation: DayModel) {
+		return {
+			date: dayInformation.date,
+			status: dayInformation.status,
+			isAdditional: dayInformation.isAdditional,
+			numberHours: dayInformation.numberHours,
+			timeRange: dayInformation.timeRange,
+			shiftNumber: dayInformation.shiftNumber,
+			grossEarning: dayInformation.grossEarning,
+			netEarning: dayInformation.netEarning,
 		}
 	}
 
@@ -326,7 +165,7 @@ export class StatisticsService {
 
 	async delete(userId: string) {
 		const statistics = await this.StatisticsModel.findOne({ owner: userId })
-		if (!statistics) new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+		if (!statistics) throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
 
 		await this.StatisticsModel.findByIdAndDelete(statistics._id)
 		return

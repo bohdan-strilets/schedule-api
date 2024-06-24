@@ -3,7 +3,6 @@ import {
 	IsIn,
 	IsNumber,
 	IsOptional,
-	IsPositive,
 	IsString,
 	Max,
 	Min,
@@ -23,34 +22,28 @@ export class UpdateDayDto {
 	@IsOptional()
 	status: Status
 
-	@IsPositive()
-	@IsOptional()
+	@IsNumber()
 	@Min(MIN_NUMBER_HOURS)
 	@Max(MAX_NUMBER_HOURS)
-	numberHours?: number
+	numberHours: number
 
 	@IsString()
-	@IsOptional()
-	timeRange?: string
+	timeRange: string
 
 	@IsNumber()
 	@IsIn(Object.values(ShiftNumber))
-	@IsOptional()
-	shiftNumber?: ShiftNumber
+	shiftNumber: ShiftNumber
 
 	@IsBoolean()
-	@IsOptional()
-	isAdditional?: boolean
+	isAdditional: boolean
 
-	@IsPositive()
-	@IsOptional()
+	@IsNumber()
 	@Min(MIN_EARNING)
 	@Max(MAX_EARNING)
-	grossEarning?: number
+	grossEarning: number
 
-	@IsPositive()
-	@IsOptional()
+	@IsNumber()
 	@Min(MIN_EARNING)
 	@Max(MAX_EARNING)
-	netEarning?: number
+	netEarning: number
 }

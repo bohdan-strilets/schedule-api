@@ -24,13 +24,17 @@ export class CalendarController {
 	}
 
 	@Patch('update/:dayId')
-	async update(@Body() dto: UpdateDayDto, @Param('dayId') dayId: string) {
-		return await this.calendarService.update(dayId, dto)
+	async update(
+		@Body() dto: UpdateDayDto,
+		@Param('dayId') dayId: string,
+		@User('_id') _id: string
+	) {
+		return await this.calendarService.update(dayId, dto, _id)
 	}
 
 	@Delete('delete/:dayId')
-	async delete(@Param('dayId') dayId: string) {
-		return await this.calendarService.delete(dayId)
+	async delete(@Param('dayId') dayId: string, @User('_id') _id: string) {
+		return await this.calendarService.delete(dayId, _id)
 	}
 
 	@Delete('delete-all')

@@ -1,5 +1,6 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
+import { User } from 'src/user/decorators/user.decorator'
 import { StatisticsService } from './statistics.service'
 
 @Auth()
@@ -12,8 +13,8 @@ export class StatisticsController {
 		return await this.statisticsService.getStat(statId)
 	}
 
-	@Delete('/:statId')
-	async delete(@Param('statId') statId: string) {
-		return await this.statisticsService.delete(statId)
+	@Delete('/delete')
+	async delete(@User('_id') _id: string) {
+		return await this.statisticsService.delete(_id)
 	}
 }

@@ -32,18 +32,44 @@ export class CalendarService {
 		return await this.DayModel.create(data)
 	}
 
-	async update(dayId: string, dto: UpdateDayDto) {
+	async update(dayId: string, dto: UpdateDayDto, userId: string) {
 		this.checkDto(dto)
-		await this.checkDayFromDb(dayId)
+		const day = await this.checkDayFromDb(dayId)
+		const dayFromDb = this.statisticsService.getDataForStat(day)
+
+		if (
+			dayFromDb.status !== dto.status ||
+			dayFromDb.shiftNumber !== dto.shiftNumber ||
+			dayFromDb.isAdditional !== dto.isAdditional
+		) {
+			await this.statisticsService.updateStat({
+				userId,
+				type: TypeOperation.DECREMENT,
+				dto: dayFromDb,
+			})
+			await this.statisticsService.updateStat({
+				userId,
+				type: TypeOperation.INCREMENT,
+				dto: { date: day.date, ...dto },
+			})
+		}
 
 		return await this.DayModel.findByIdAndUpdate(dayId, dto, {
 			new: true,
 		})
 	}
 
-	async delete(dayId: string) {
+	async delete(dayId: string, userId: string) {
 		await this.checkDayFromDb(dayId)
-		await this.DayModel.findByIdAndDelete(dayId)
+		const deletedDay = await this.DayModel.findByIdAndDelete(dayId)
+		const dayInformation = this.statisticsService.getDataForStat(deletedDay)
+
+		await this.statisticsService.updateStat({
+			userId,
+			type: TypeOperation.DECREMENT,
+			dto: { date: deletedDay.date, ...dayInformation },
+		})
+
 		return
 	}
 
