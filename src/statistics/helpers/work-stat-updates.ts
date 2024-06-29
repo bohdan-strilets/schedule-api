@@ -1,21 +1,22 @@
 import { ShiftNumber } from 'src/calendar/enums/shift-number.enum'
 import { Status } from 'src/calendar/enums/status.enum'
 import { WorkStatFields } from '../enums/work-stat-fields.enum'
-import { UpdateEntry, WorkStatUpdates } from '../types/work-stat-updates.type'
+import { UpdateEntry } from '../types/update-entry.type'
+import { WorkStatUpdates } from '../types/work-stat-updates.type'
 
 export const getWorkStatUpdates = ({
-	dto,
-	tax,
+	dayInfo,
 	nightHours,
 }: WorkStatUpdates): UpdateEntry[] => {
 	const {
-		status,
-		numberHours,
 		grossEarning,
-		netEarning,
 		isAdditional,
+		netEarning,
+		numberHours,
 		shiftNumber,
-	} = dto
+		status,
+	} = dayInfo
+	const tax = grossEarning - netEarning
 
 	return [
 		{

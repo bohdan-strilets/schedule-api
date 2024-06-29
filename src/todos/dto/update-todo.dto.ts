@@ -1,5 +1,4 @@
 import {
-	IsBoolean,
 	IsDateString,
 	IsIn,
 	IsOptional,
@@ -24,10 +23,6 @@ export class UpdateTodoDto {
 	@IsIn(Object.values(Priority))
 	@IsOptional()
 	priority?: Priority
-
-	@IsBoolean()
-	@IsOptional()
-	isCompleted?: boolean
 
 	@IsDateString()
 	@IsOptional()

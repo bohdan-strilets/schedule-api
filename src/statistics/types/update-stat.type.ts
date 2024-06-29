@@ -1,8 +1,12 @@
-import { AddedDayDto } from 'src/calendar/dto/added-day.dto'
+import { StatName } from '../enums/stat-name.enum'
 import { TypeOperation } from '../enums/type-operation.enum'
+import { TodoStatUpdates } from './todo-stat-updates.type'
+import { DayInfo } from './work-stat-updates.type'
 
 export type UpdateStat = {
+	date: Date
 	userId: string
 	type: TypeOperation
-	dto: AddedDayDto
+	dto: DayInfo | TodoStatUpdates
+	statName: StatName
 }

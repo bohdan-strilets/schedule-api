@@ -3,8 +3,11 @@ import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
 import { DayModel } from 'src/calendar/models/day.model'
 import { ErrorMessages } from 'src/common/vars/error-messages'
+import { TodoModel } from 'src/todos/models/todo.model'
+import { StatName } from './enums/stat-name.enum'
 import { TypeOperation } from './enums/type-operation.enum'
-import { getWorkStatUpdates } from './helpers/works-stat-updates'
+import { getTodoStatUpdates } from './helpers/todo-stat-updates'
+import { getWorkStatUpdates } from './helpers/work-stat-updates'
 import { StatisticsModel } from './models/statistics.model'
 import { CalculateNightHours } from './types/calculate-night-hours.type'
 import { ChangeStatField } from './types/change-stat-field.type'
@@ -14,8 +17,11 @@ import { FoundValue } from './types/found-value.type'
 import { GetOldValues } from './types/get-old-values.type'
 import { MonthlyStats } from './types/monthly-stats.type'
 import { Operands } from './types/operands .type'
+import { TodoStatUpdates } from './types/todo-stat-updates.type'
+import { UpdateEntry } from './types/update-entry.type'
 import { UpdateStat } from './types/update-stat.type'
 import { UpdateValue } from './types/update-value.type'
+import { DayInfo } from './types/work-stat-updates.type'
 
 export class StatisticsOperationsService {
 	constructor(
@@ -60,17 +66,18 @@ export class StatisticsOperationsService {
 	}
 
 	private async changeStatField(options: ChangeStatField) {
-		const { date, type, value, userId, fieldName } = options
+		const { date, type, value, userId, fieldName, statName } = options
 		const statistics = await this.StatisticsModel.findOne({ owner: userId })
+
 		if (!statistics) throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
 
-		const workStats = statistics.workStats
-		const field: MonthlyStats[] = workStats[fieldName]
+		const stats = statistics[statName]
+		const field: MonthlyStats[] = stats[fieldName]
 
 		const monthYear = this.getDate(new Date(date))
 		const foundValue = this.foundValue({ field, monthYear })
 
-		const updateFieldName = `workStats.${fieldName}`
+		const updateFieldName = `${statName}.${fieldName}`
 		let result: MonthlyStats[] = []
 
 		if (foundValue) {
@@ -103,16 +110,26 @@ export class StatisticsOperationsService {
 		return MIDNIGHT - START_NIGHT_TIME + endTime
 	}
 
-	async updateStat({ userId, type, dto }: UpdateStat) {
-		const { date, numberHours, timeRange, grossEarning, netEarning } = dto
-		const tax = grossEarning - netEarning
-		const changeStatOptions = { date, userId, type }
-		const nightHours = this.calculateNightHours({ timeRange, numberHours })
-		const updates = getWorkStatUpdates({
-			dto,
-			tax,
-			nightHours,
-		})
+	async updateStat({ date, userId, type, dto, statName }: UpdateStat) {
+		const changeStatOptions = { date, userId, type, statName }
+		let updates: UpdateEntry[]
+
+		if (statName === StatName.WORK) {
+			const { timeRange, numberHours } = dto as DayInfo
+			const nightHours = this.calculateNightHours({
+				timeRange,
+				numberHours,
+			})
+			updates = getWorkStatUpdates({ dayInfo: dto as DayInfo, nightHours })
+		}
+		if (statName === StatName.TODO) {
+			const { priority, isCompleted } = dto as TodoStatUpdates
+			updates = getTodoStatUpdates({
+				priority,
+				isCompleted,
+				typeOperation: type,
+			})
+		}
 
 		for (const update of updates) {
 			if (update.condition) {
@@ -123,16 +140,23 @@ export class StatisticsOperationsService {
 		}
 	}
 
-	getDataForStat(dayInformation: DayModel) {
+	getDayInfo(day: DayModel) {
 		return {
-			date: dayInformation.date,
-			status: dayInformation.status,
-			isAdditional: dayInformation.isAdditional,
-			numberHours: dayInformation.numberHours,
-			timeRange: dayInformation.timeRange,
-			shiftNumber: dayInformation.shiftNumber,
-			grossEarning: dayInformation.grossEarning,
-			netEarning: dayInformation.netEarning,
+			date: day.date,
+			status: day.status,
+			isAdditional: day.isAdditional,
+			numberHours: day.numberHours,
+			timeRange: day.timeRange,
+			shiftNumber: day.shiftNumber,
+			grossEarning: day.grossEarning,
+			netEarning: day.netEarning,
+		}
+	}
+
+	getTodoInfo(todo: TodoModel) {
+		return {
+			priority: todo.priority,
+			isCompleted: todo.isCompleted,
 		}
 	}
 }

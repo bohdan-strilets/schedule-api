@@ -1,3 +1,4 @@
+import { StatName } from '../enums/stat-name.enum'
 import { TypeOperation } from '../enums/type-operation.enum'
 
 export type ChangeStatField = {
@@ -6,4 +7,5 @@ export type ChangeStatField = {
 	userId: string
 	fieldName: string
 	type: TypeOperation
+	statName: StatName
 }

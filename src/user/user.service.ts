@@ -221,7 +221,7 @@ export class UserService {
 
 	// HELPERS
 
-	private returnUserFields(user: UserModel) {
+	returnUserFields(user: UserModel) {
 		return {
 			_id: user._id,
 			firstName: user.firstName,
@@ -241,11 +241,11 @@ export class UserService {
 		}
 	}
 
-	private async findByEmail(email: string) {
+	async findByEmail(email: string) {
 		return this.UserModel.findOne({ email }).exec()
 	}
 
-	private async findById(id: string) {
+	async findById(id: string) {
 		return this.UserModel.findById(id).exec()
 	}
 

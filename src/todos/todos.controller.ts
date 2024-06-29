@@ -25,21 +25,26 @@ export class TodosController {
 	}
 
 	@Patch('update/:todoId')
-	async update(@Body() dto: UpdateTodoDto, @Param('todoId') todoId: string) {
-		return await this.todosService.update(todoId, dto)
+	async update(
+		@Body() dto: UpdateTodoDto,
+		@Param('todoId') todoId: string,
+		@User('_id') _id: string
+	) {
+		return await this.todosService.update(todoId, dto, _id)
 	}
 
 	@Patch('update-completed/:todoId')
 	async updateCompleted(
 		@Body() dto: UpdateCompletedDto,
-		@Param('todoId') todoId: string
+		@Param('todoId') todoId: string,
+		@User('_id') _id: string
 	) {
-		return await this.todosService.updateCompleted(todoId, dto)
+		return await this.todosService.updateCompleted(todoId, dto, _id)
 	}
 
 	@Delete('delete/:todoId')
-	async delete(@Param('todoId') todoId: string) {
-		return await this.todosService.delete(todoId)
+	async delete(@Param('todoId') todoId: string, @User('_id') _id: string) {
+		return await this.todosService.delete(todoId, _id)
 	}
 
 	@Delete('delete-all')

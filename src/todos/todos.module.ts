@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common'
 import { TypegooseModule } from 'nestjs-typegoose'
+import { CalendarModule } from 'src/calendar/calendar.module'
+import { StatisticsModule } from 'src/statistics/statistics.module'
 import { TodoModel } from './models/todo.model'
 import { TodosController } from './todos.controller'
 import { TodosService } from './todos.service'
@@ -14,6 +16,8 @@ import { TodosService } from './todos.service'
 				},
 			},
 		]),
+		StatisticsModule,
+		CalendarModule,
 	],
 	controllers: [TodosController],
 	providers: [TodosService],

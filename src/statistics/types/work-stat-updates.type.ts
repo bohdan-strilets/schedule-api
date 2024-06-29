@@ -1,15 +1,17 @@
-import { AddedDayDto } from 'src/calendar/dto/added-day.dto'
-import { WorkStatFields } from '../enums/work-stat-fields.enum'
+import { Status } from 'src/calendar/enums/status.enum'
 
-export type WorkStatUpdates = {
-	dto: AddedDayDto
-	tax: number
-	nightHours: number
+export type DayInfo = {
+	date: Date
+	status: Status
+	numberHours: number
+	grossEarning: number
+	netEarning: number
+	isAdditional: boolean
+	shiftNumber: number
+	timeRange: string
 }
 
-type FieldUpdate = [WorkStatFields, number]
-
-export type UpdateEntry = {
-	condition: boolean
-	fields: FieldUpdate[]
+export type WorkStatUpdates = {
+	dayInfo: DayInfo
+	nightHours: number
 }
