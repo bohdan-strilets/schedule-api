@@ -124,11 +124,79 @@ export class TodosService {
 	}
 
 	async deleteAll(userId: string) {
+		const allTodos = await this.TodoModel.find({ owner: userId })
+
+		for (const todo of allTodos) {
+			const { date } = await this.calendarService.getById(String(todo.day))
+			const todoId = String(todo._id)
+			const updatedDto = { isCompleted: false }
+
+			if (todo.isCompleted) {
+				const updatedTodo = await this.updateCompleted(
+					todoId,
+					updatedDto,
+					userId
+				)
+
+				const infoForStat = this.statisticsOperations.getTodoInfo(updatedTodo)
+				await this.statisticsOperations.updateStat({
+					date,
+					userId,
+					type: TypeOperation.DECREMENT,
+					dto: infoForStat,
+					statName: StatName.TODO,
+				})
+			} else {
+				const infoForStat = this.statisticsOperations.getTodoInfo(todo)
+				await this.statisticsOperations.updateStat({
+					date,
+					userId,
+					type: TypeOperation.DECREMENT,
+					dto: infoForStat,
+					statName: StatName.TODO,
+				})
+			}
+		}
+
 		await this.TodoModel.deleteMany({ owner: userId })
 		return
 	}
 
-	async deleteByDay(dayId: string) {
+	async deleteByDay(dayId: string, userId: string) {
+		const allTodosByDay = await this.TodoModel.find({ day: dayId })
+
+		for (const todo of allTodosByDay) {
+			const { date } = await this.calendarService.getById(String(todo.day))
+			const todoId = String(todo._id)
+			const updatedDto = { isCompleted: false }
+
+			if (todo.isCompleted) {
+				const updatedTodo = await this.updateCompleted(
+					todoId,
+					updatedDto,
+					userId
+				)
+
+				const infoForStat = this.statisticsOperations.getTodoInfo(updatedTodo)
+				await this.statisticsOperations.updateStat({
+					date,
+					userId,
+					type: TypeOperation.DECREMENT,
+					dto: infoForStat,
+					statName: StatName.TODO,
+				})
+			} else {
+				const infoForStat = this.statisticsOperations.getTodoInfo(todo)
+				await this.statisticsOperations.updateStat({
+					date,
+					userId,
+					type: TypeOperation.DECREMENT,
+					dto: infoForStat,
+					statName: StatName.TODO,
+				})
+			}
+		}
+
 		await this.TodoModel.deleteMany({ day: dayId })
 		return
 	}

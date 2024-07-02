@@ -35,17 +35,12 @@ export const getTodoStatUpdates = ({
 				[TodoStatFields.TODO_WITH_HIGH_PRIORITY, 1],
 			],
 		})
-	}
-
-	if (isCompleted === true) {
+	} else if (isCompleted && typeOperation === TypeOperation.INCREMENT) {
 		updates.push({
 			condition: true,
 			fields: [[TodoStatFields.TODO_COMPLETED, 1]],
 		})
-	} else if (
-		typeOperation === TypeOperation.DECREMENT &&
-		isCompleted === false
-	) {
+	} else if (!isCompleted && typeOperation === TypeOperation.DECREMENT) {
 		updates.push({
 			condition: true,
 			fields: [[TodoStatFields.TODO_COMPLETED, 1]],
