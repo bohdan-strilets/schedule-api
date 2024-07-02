@@ -124,7 +124,7 @@ export class TodosService {
 	}
 
 	async deleteAll(userId: string) {
-		const allTodos = await this.TodoModel.find({ owner: userId })
+		const allTodos = await this.getAll(userId)
 
 		for (const todo of allTodos) {
 			const { date } = await this.calendarService.getById(String(todo.day))
@@ -163,7 +163,7 @@ export class TodosService {
 	}
 
 	async deleteByDay(dayId: string, userId: string) {
-		const allTodosByDay = await this.TodoModel.find({ day: dayId })
+		const allTodosByDay = await this.getTodoByDay(dayId, userId)
 
 		for (const todo of allTodosByDay) {
 			const { date } = await this.calendarService.getById(String(todo.day))
