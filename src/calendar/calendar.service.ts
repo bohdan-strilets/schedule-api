@@ -85,6 +85,19 @@ export class CalendarService {
 	}
 
 	async deleteAll(userId: string) {
+		const allDays = await this.getAll(userId)
+
+		for (const day of allDays) {
+			const dayInfoForStat = this.statisticsOperations.getDayInfo(day)
+			await this.statisticsOperations.updateStat({
+				date: day.date,
+				userId,
+				type: TypeOperation.DECREMENT,
+				dto: dayInfoForStat,
+				statName: StatName.WORK,
+			})
+		}
+
 		await this.DayModel.deleteMany({ owner: userId })
 		return
 	}
