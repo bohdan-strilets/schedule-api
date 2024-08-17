@@ -18,7 +18,6 @@ import { UserModel } from 'src/user/models/user.model'
 import { UserService } from 'src/user/user.service'
 import { v4 } from 'uuid'
 import { LoginDto } from './dto/login.dto'
-import { RefreshTokenDto } from './dto/refresh-token.dto'
 import { RegistrationDto } from './dto/registration.dto'
 
 @Injectable()
@@ -76,8 +75,7 @@ export class AuthService {
 		}
 	}
 
-	async refreshToken(dto: RefreshTokenDto) {
-		const { refreshToken } = dto
+	async refreshToken(refreshToken: string) {
 		if (!refreshToken)
 			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
 

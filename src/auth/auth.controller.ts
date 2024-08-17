@@ -1,14 +1,18 @@
 import {
 	Body,
 	Controller,
+	Get,
 	HttpCode,
 	Post,
+	Req,
+	Res,
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common'
+import { Request, Response } from 'express'
+import { cookieKeys, cookieOptions } from 'src/common/cookie-options'
 import { AuthService } from './auth.service'
 import { LoginDto } from './dto/login.dto'
-import { RefreshTokenDto } from './dto/refresh-token.dto'
 import { RegistrationDto } from './dto/registration.dto'
 
 @Controller('auth')
@@ -17,21 +21,49 @@ export class AuthController {
 
 	@UsePipes(new ValidationPipe())
 	@Post('registration')
-	async registration(@Body() dto: RegistrationDto) {
-		return this.authService.registration(dto)
+	async registration(
+		@Body() dto: RegistrationDto,
+		@Res({ passthrough: true }) res: Response
+	) {
+		const data = await this.authService.registration(dto)
+		res.cookie(
+			cookieKeys.REFRESH_TOKEN,
+			data.tokens.refreshToken,
+			cookieOptions
+		)
+		return data
 	}
 
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
 	@Post('login')
-	async login(@Body() dto: LoginDto) {
-		return this.authService.login(dto)
+	async login(
+		@Body() dto: LoginDto,
+		@Res({ passthrough: true }) res: Response
+	) {
+		const data = await this.authService.login(dto)
+		res.cookie(
+			cookieKeys.REFRESH_TOKEN,
+			data.tokens.refreshToken,
+			cookieOptions
+		)
+		return data
 	}
 
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
-	@Post('refresh-token')
-	async refreshToken(@Body() dto: RefreshTokenDto) {
-		return this.authService.refreshToken(dto)
+	@Get('refresh-token')
+	async refreshToken(
+		@Req() req: Request,
+		@Res({ passthrough: true }) res: Response
+	) {
+		const refreshToken = req.cookies[cookieKeys.REFRESH_TOKEN]
+		const data = await this.authService.refreshToken(refreshToken)
+		res.cookie(
+			cookieKeys.REFRESH_TOKEN,
+			data.tokens.refreshToken,
+			cookieOptions
+		)
+		return data
 	}
 }
