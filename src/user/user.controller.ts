@@ -110,4 +110,10 @@ export class UserController {
 	async changeAddress(@Body() dto: ChangeAddressDto, @User('_id') _id: string) {
 		return await this.userService.changeAddress(dto, _id)
 	}
+
+	@Auth()
+	@Get('current-user')
+	async getCurrentUser(@User('_id') _id: string) {
+		return await this.userService.getCurrentUser(_id)
+	}
 }

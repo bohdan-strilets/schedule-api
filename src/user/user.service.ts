@@ -219,6 +219,14 @@ export class UserService {
 		return { user: this.returnUserFields(updatedUser) }
 	}
 
+	async getCurrentUser(userId: string) {
+		const user = await this.findById(userId)
+		if (!user)
+			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
+
+		return this.returnUserFields(user)
+	}
+
 	// HELPERS
 
 	returnUserFields(user: UserModel) {
