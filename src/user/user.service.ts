@@ -1,14 +1,11 @@
-import {
-	Injectable,
-	NotFoundException,
-	UnauthorizedException,
-} from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import * as fs from 'fs'
 import { InjectModel } from 'nestjs-typegoose'
 import { CalendarService } from 'src/calendar/calendar.service'
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service'
 import { FileType } from 'src/cloudinary/enums/file-type.enum'
+import { ResponseType } from 'src/common/response.type'
 import { CloudinaryFolders } from 'src/common/vars/cloudinary-folders'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { CompanyService } from 'src/company/company.service'
@@ -24,6 +21,7 @@ import { ChangeProfileDto } from './dto/change-profile.dto'
 import { EmailDto } from './dto/email.dto'
 import { ResetPasswordDto } from './dto/reset-password.dto'
 import { UserModel } from './models/user.model'
+import { ReturningUser } from './types/returning-user.type'
 
 @Injectable()
 export class UserService {
@@ -39,23 +37,37 @@ export class UserService {
 		private readonly vacationService: VacationService
 	) {}
 
-	async activationEmail(activationToken: string) {
+	async activationEmail(activationToken: string): Promise<ResponseType> {
 		const user = await this.UserModel.findOne({ activationToken })
 
-		if (!user)
-			throw new NotFoundException(ErrorMessages.ACTIVATION_TOKEN_IS_WRONG)
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.ACTIVATION_TOKEN_IS_WRONG,
+			}
+		}
 
 		const activationOptions = { activationToken: null, isActivated: true }
 		await this.UserModel.findByIdAndUpdate(user._id, activationOptions)
 
-		return
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async requestRepeatActivationEmail(dto: EmailDto) {
+	async requestRepeatActivationEmail(dto: EmailDto): Promise<ResponseType> {
 		const user = await this.UserModel.findOne({ email: dto.email })
 		const activationToken = v4()
 
-		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.USER_NOT_FOUND,
+			}
+		}
 
 		const updatedUser = await this.UserModel.findByIdAndUpdate(
 			user._id,
@@ -71,79 +83,155 @@ export class UserService {
 			updatedUser.activationToken
 		)
 
-		return
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async changeProfile(userId: string, dto: ChangeProfileDto) {
-		if (!userId)
-			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
+	async changeProfile(
+		userId: string,
+		dto: ChangeProfileDto
+	): Promise<ResponseType<ReturningUser>> {
+		if (!userId) {
+			return {
+				success: false,
+				statusCode: HttpStatus.UNAUTHORIZED,
+				message: ErrorMessages.USER_IS_NOT_UNAUTHORIZED,
+			}
+		}
 
 		const updatedUser = await this.UserModel.findByIdAndUpdate(userId, dto, {
 			new: true,
 		})
 
-		if (!updatedUser) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+		if (!updatedUser) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.USER_NOT_FOUND,
+			}
+		}
 
-		return this.returnUserFields(updatedUser)
+		const returningUser = this.returnUserFields(updatedUser)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: returningUser,
+		}
 	}
 
-	async changeEmail(userId: string, dto: EmailDto) {
-		if (!userId)
-			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
+	async changeEmail(userId: string, dto: EmailDto): Promise<ResponseType> {
+		if (!userId) {
+			return {
+				success: false,
+				statusCode: HttpStatus.UNAUTHORIZED,
+				message: ErrorMessages.USER_IS_NOT_UNAUTHORIZED,
+			}
+		}
 
 		const activationToken = v4()
 		await this.sendgridService.sendConfirmEmailLetter(
 			dto.email,
 			activationToken
 		)
+
 		const emailDto = { email: dto.email, activationToken, isActivated: false }
 		await this.UserModel.findByIdAndUpdate(userId, emailDto, { new: true })
 
-		return
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async requestResetPassword(dto: EmailDto) {
+	async requestResetPassword(dto: EmailDto): Promise<ResponseType> {
 		const user = await this.findByEmail(dto.email)
-		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.USER_NOT_FOUND,
+			}
+		}
 
 		user.password = ''
 		user.save()
 
 		await this.sendgridService.sendPasswordResetEmail(user.email)
-		return
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async resetPassword(dto: ResetPasswordDto) {
+	async resetPassword(dto: ResetPasswordDto): Promise<ResponseType> {
 		const hashPassword = await this.passwordService.createPassword(dto.password)
 
 		const user = await this.findByEmail(dto.email)
-		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.USER_NOT_FOUND,
+			}
+		}
 
 		await this.UserModel.findByIdAndUpdate(user._id, { password: hashPassword })
-		return
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async changePassword(dto: ChangePasswordDto, userId: string) {
+	async changePassword(
+		dto: ChangePasswordDto,
+		userId: string
+	): Promise<ResponseType> {
 		const user = await this.findById(userId)
 		const isValidPassword = await this.passwordService.checkPassword(
 			dto.password,
 			user.password
 		)
 
-		if (!user || !isValidPassword)
-			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
+		if (!user || !isValidPassword) {
+			return {
+				success: false,
+				statusCode: HttpStatus.UNAUTHORIZED,
+				message: ErrorMessages.USER_IS_NOT_UNAUTHORIZED,
+			}
+		}
 
 		const hashPassword = await this.passwordService.createPassword(
 			dto.newPassword
 		)
 
 		await this.UserModel.findByIdAndUpdate(userId, { password: hashPassword })
-		return
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async uploadAvatar(file: Express.Multer.File, userId: string) {
+	async uploadAvatar(
+		file: Express.Multer.File,
+		userId: string
+	): Promise<ResponseType<string[]>> {
 		const user = await this.findById(userId)
-		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.USER_NOT_FOUND,
+			}
+		}
 
 		const avatarPath = `${CloudinaryFolders.USER_AVATAR}${userId}`
 		const resultPath = await this.cloudinaryService.uploadFile(
@@ -159,12 +247,26 @@ export class UserService {
 			{ new: true }
 		)
 
-		return { avatarUrl: updatedUser.avatarUrls }
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: updatedUser.avatarUrls,
+		}
 	}
 
-	async uploadPoster(file: Express.Multer.File, userId: string) {
+	async uploadPoster(
+		file: Express.Multer.File,
+		userId: string
+	): Promise<ResponseType<string[]>> {
 		const user = await this.findById(userId)
-		if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.USER_NOT_FOUND,
+			}
+		}
 
 		const posterPath = `${CloudinaryFolders.USER_POSTER}${userId}`
 		const resultPath = await this.cloudinaryService.uploadFile(
@@ -180,13 +282,23 @@ export class UserService {
 			{ new: true }
 		)
 
-		return { posterUrl: updatedUser.posterUrls }
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: updatedUser.posterUrls,
+		}
 	}
 
-	async deleteProfile(userId: string) {
+	async deleteProfile(userId: string): Promise<ResponseType> {
 		const user = await this.findById(userId)
-		if (!user)
-			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
+
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.UNAUTHORIZED,
+				message: ErrorMessages.USER_IS_NOT_UNAUTHORIZED,
+			}
+		}
 
 		await this.UserModel.findByIdAndDelete(userId)
 
@@ -202,10 +314,16 @@ export class UserService {
 		await this.todosService.deleteAll(userId)
 		await this.vacationService.deleteAll(userId)
 
-		return
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async changeAddress(dto: ChangeAddressDto, userId: string) {
+	async changeAddress(
+		dto: ChangeAddressDto,
+		userId: string
+	): Promise<ResponseType<ReturningUser>> {
 		const location = { location: { ...dto } }
 		const updatedUser = await this.UserModel.findByIdAndUpdate(
 			userId,
@@ -213,18 +331,41 @@ export class UserService {
 			{ new: true }
 		)
 
-		if (!updatedUser)
-			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
+		if (!updatedUser) {
+			return {
+				success: false,
+				statusCode: HttpStatus.UNAUTHORIZED,
+				message: ErrorMessages.USER_IS_NOT_UNAUTHORIZED,
+			}
+		}
 
-		return { user: this.returnUserFields(updatedUser) }
+		const returningUser = this.returnUserFields(updatedUser)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: returningUser,
+		}
 	}
 
-	async getCurrentUser(userId: string) {
+	async getCurrentUser(userId: string): Promise<ResponseType<ReturningUser>> {
 		const user = await this.findById(userId)
-		if (!user)
-			throw new UnauthorizedException(ErrorMessages.USER_IS_NOT_UNAUTHORIZED)
 
-		return this.returnUserFields(user)
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.UNAUTHORIZED,
+				message: ErrorMessages.USER_IS_NOT_UNAUTHORIZED,
+			}
+		}
+
+		const returningUser = this.returnUserFields(user)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: returningUser,
+		}
 	}
 
 	// HELPERS

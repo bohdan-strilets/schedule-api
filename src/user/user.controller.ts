@@ -8,11 +8,14 @@ import {
 	Param,
 	Patch,
 	Post,
+	Res,
 	UploadedFile,
 	UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { Response } from 'express'
 import { Auth } from 'src/auth/decorators/auth.decorator'
+import { ResponseType } from 'src/common/response.type'
 import { DEFAULT_FOLDER_FOR_FILES } from 'src/common/vars/default-file-folder'
 import { User } from './decorators/user.decorator'
 import { ChangeAddressDto } from './dto/change-address.dto'
@@ -21,6 +24,7 @@ import { ChangeProfileDto } from './dto/change-profile.dto'
 import { EmailDto } from './dto/email.dto'
 import { ResetPasswordDto } from './dto/reset-password.dto'
 import { imageValidator } from './pipes/image-validator.pipe'
+import { ReturningUser } from './types/returning-user.type'
 import { UserService } from './user.service'
 
 @Controller('user')
@@ -28,47 +32,110 @@ export class UserController {
 	constructor(private readonly userService: UserService) {}
 
 	@Get('activation-email/:activationToken')
-	async activationEmail(@Param('activationToken') activationToken: string) {
-		return await this.userService.activationEmail(activationToken)
+	async activationEmail(
+		@Param('activationToken') activationToken: string,
+		@Res() res: Response
+	): Promise<ResponseType> {
+		const data = await this.userService.activationEmail(activationToken)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@HttpCode(HttpStatus.OK)
 	@Post('request-repeat-activation-email')
-	async requestRepeatActivationEmail(@Body() dto: EmailDto) {
-		return await this.userService.requestRepeatActivationEmail(dto)
+	async requestRepeatActivationEmail(
+		@Body() dto: EmailDto,
+		@Res() res: Response
+	): Promise<ResponseType> {
+		const data = await this.userService.requestRepeatActivationEmail(dto)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@Auth()
 	@Patch('change-profile')
-	async changeProfile(@Body() dto: ChangeProfileDto, @User('_id') _id: string) {
-		return await this.userService.changeProfile(_id, dto)
+	async changeProfile(
+		@Body() dto: ChangeProfileDto,
+		@User('_id') _id: string,
+		@Res() res: Response
+	): Promise<ResponseType<ReturningUser>> {
+		const data = await this.userService.changeProfile(_id, dto)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@Auth()
 	@Patch('change-email')
-	async changeEmail(@Body() dto: EmailDto, @User('_id') _id: string) {
-		return await this.userService.changeEmail(_id, dto)
+	async changeEmail(
+		@Body() dto: EmailDto,
+		@User('_id') _id: string,
+		@Res() res: Response
+	): Promise<ResponseType> {
+		const data = await this.userService.changeEmail(_id, dto)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@HttpCode(HttpStatus.OK)
 	@Post('request-reset-password')
-	async requestResetPassword(@Body() dto: EmailDto) {
-		return await this.userService.requestResetPassword(dto)
+	async requestResetPassword(
+		@Body() dto: EmailDto,
+		@Res() res: Response
+	): Promise<ResponseType> {
+		const data = await this.userService.requestResetPassword(dto)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@HttpCode(HttpStatus.OK)
 	@Post('reset-password')
-	async resetPassword(@Body() dto: ResetPasswordDto) {
-		return await this.userService.resetPassword(dto)
+	async resetPassword(
+		@Body() dto: ResetPasswordDto,
+		@Res() res: Response
+	): Promise<ResponseType> {
+		const data = await this.userService.resetPassword(dto)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@Auth()
 	@Patch('change-password')
 	async changePassword(
 		@Body() dto: ChangePasswordDto,
-		@User('_id') _id: string
-	) {
-		return await this.userService.changePassword(dto, _id)
+		@User('_id') _id: string,
+		@Res() res: Response
+	): Promise<ResponseType> {
+		const data = await this.userService.changePassword(dto, _id)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@Auth()
@@ -80,9 +147,16 @@ export class UserController {
 	async uploadAvatar(
 		@UploadedFile(imageValidator)
 		file: Express.Multer.File,
-		@User('_id') _id: string
-	) {
-		return await this.userService.uploadAvatar(file, _id)
+		@User('_id') _id: string,
+		@Res() res: Response
+	): Promise<ResponseType<string[]>> {
+		const data = await this.userService.uploadAvatar(file, _id)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@Auth()
@@ -94,26 +168,61 @@ export class UserController {
 	async uploadPoster(
 		@UploadedFile(imageValidator)
 		file: Express.Multer.File,
-		@User('_id') _id: string
-	) {
-		return await this.userService.uploadPoster(file, _id)
+		@User('_id') _id: string,
+		@Res() res: Response
+	): Promise<ResponseType<string[]>> {
+		const data = await this.userService.uploadPoster(file, _id)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@Auth()
 	@Delete('delete-profile')
-	async deleteProfile(@User('_id') _id: string) {
-		return await this.userService.deleteProfile(_id)
+	async deleteProfile(
+		@User('_id') _id: string,
+		@Res() res: Response
+	): Promise<ResponseType> {
+		const data = await this.userService.deleteProfile(_id)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@Auth()
 	@Patch('change-address')
-	async changeAddress(@Body() dto: ChangeAddressDto, @User('_id') _id: string) {
-		return await this.userService.changeAddress(dto, _id)
+	async changeAddress(
+		@Body() dto: ChangeAddressDto,
+		@User('_id') _id: string,
+		@Res() res: Response
+	): Promise<ResponseType<ReturningUser>> {
+		const data = await this.userService.changeAddress(dto, _id)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 
 	@Auth()
 	@Get('current-user')
-	async getCurrentUser(@User('_id') _id: string) {
-		return await this.userService.getCurrentUser(_id)
+	async getCurrentUser(
+		@User('_id') _id: string,
+		@Res() res: Response
+	): Promise<ResponseType<ReturningUser>> {
+		const data = await this.userService.getCurrentUser(_id)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
 	}
 }
