@@ -1,10 +1,7 @@
-import {
-	BadRequestException,
-	Injectable,
-	NotFoundException,
-} from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
+import { ResponseType } from 'src/common/response.type'
 import { CompanyLogoUrl } from 'src/common/vars/company-logo'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { CreateCompanyDto } from './dto/create-company.dto'
@@ -18,51 +15,109 @@ export class CompanyService {
 		private readonly CompanyModel: ModelType<CompanyModel>
 	) {}
 
-	async create(userId: string, dto: CreateCompanyDto) {
+	async create(
+		userId: string,
+		dto: CreateCompanyDto
+	): Promise<ResponseType<CompanyModel>> {
 		this.checkDto(dto)
 		const data = { ...dto, owner: userId, logoUrl: CompanyLogoUrl }
-		return await this.CompanyModel.create(data)
+		const company = await this.CompanyModel.create(data)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.CREATED,
+			data: company,
+		}
 	}
 
-	async update(companyId: string, dto: UpdateCompanyDto) {
+	async update(
+		companyId: string,
+		dto: UpdateCompanyDto
+	): Promise<ResponseType<CompanyModel>> {
 		this.checkDto(dto)
 		await this.checkCompanyFromDb(companyId)
 
-		return await this.CompanyModel.findByIdAndUpdate(companyId, dto, {
-			new: true,
-		})
+		const updatedCompany = await this.CompanyModel.findByIdAndUpdate(
+			companyId,
+			dto,
+			{
+				new: true,
+			}
+		)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: updatedCompany,
+		}
 	}
 
-	async delete(companyId: string) {
+	async delete(companyId: string): Promise<ResponseType> {
 		await this.checkCompanyFromDb(companyId)
 		await this.CompanyModel.findByIdAndDelete(companyId)
-		return
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async deleteAll(userId: string) {
+	async deleteAll(userId: string): Promise<ResponseType> {
 		await this.CompanyModel.deleteMany({ owner: userId })
-		return
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async getById(companyId: string) {
-		return await this.checkCompanyFromDb(companyId)
+	async getById(companyId: string): Promise<ResponseType<CompanyModel>> {
+		const company = await this.checkCompanyFromDb(companyId)
+
+		if ('_id' in company) {
+			return {
+				success: true,
+				statusCode: HttpStatus.OK,
+				data: company,
+			}
+		}
 	}
 
-	async getAll(userId: string) {
-		return await this.CompanyModel.find({ owner: userId })
+	async getAll(userId: string): Promise<ResponseType<CompanyModel[]>> {
+		const companies = await this.CompanyModel.find({ owner: userId })
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: companies,
+		}
 	}
 
 	// HELPERS
 
-	private async checkCompanyFromDb(companyId: string) {
+	private async checkCompanyFromDb(
+		companyId: string
+	): Promise<CompanyModel | ResponseType> {
 		const companyFromDb = await this.CompanyModel.findById(companyId)
-		if (!companyFromDb)
-			throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+
+		if (!companyFromDb) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.NOT_FOUND_BY_ID,
+			}
+		}
 
 		return companyFromDb
 	}
 
 	private checkDto(dto: any) {
-		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
+		if (!dto) {
+			return {
+				success: false,
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: ErrorMessages.BAD_REQUEST,
+			}
+		}
 	}
 }
