@@ -1,10 +1,7 @@
-import {
-	BadRequestException,
-	Injectable,
-	NotFoundException,
-} from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
+import { ResponseType } from 'src/common/response.type'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { StatName } from 'src/statistics/enums/stat-name.enum'
 import { TypeOperation } from 'src/statistics/enums/type-operation.enum'
@@ -20,7 +17,10 @@ export class CalendarService {
 		private readonly statisticsOperations: StatisticsOperationsService
 	) {}
 
-	async added(userId: string, dto: AddedDayDto) {
+	async added(
+		userId: string,
+		dto: AddedDayDto
+	): Promise<ResponseType<DayModel>> {
 		this.checkDto(dto)
 		const data = { ...dto, owner: userId }
 		const createdDay = await this.DayModel.create(data)
@@ -34,41 +34,58 @@ export class CalendarService {
 			statName: StatName.WORK,
 		})
 
-		return createdDay
+		return {
+			success: true,
+			statusCode: HttpStatus.CREATED,
+			data: createdDay,
+		}
 	}
 
-	async update(dayId: string, dto: UpdateDayDto, userId: string) {
+	async update(
+		dayId: string,
+		dto: UpdateDayDto,
+		userId: string
+	): Promise<ResponseType<DayModel>> {
 		this.checkDto(dto)
 		const day = await this.checkDayFromDb(dayId)
-		const dayInfoForStat = this.statisticsOperations.getDayInfo(day)
 
-		if (
-			dayInfoForStat.status !== dto.status ||
-			dayInfoForStat.shiftNumber !== dto.shiftNumber ||
-			dayInfoForStat.isAdditional !== dto.isAdditional
-		) {
-			await this.statisticsOperations.updateStat({
-				date: dayInfoForStat.date,
-				userId,
-				type: TypeOperation.DECREMENT,
-				dto: dayInfoForStat,
-				statName: StatName.WORK,
+		if ('_id' in day) {
+			const dayInfoForStat = this.statisticsOperations.getDayInfo(day)
+
+			if (
+				dayInfoForStat.status !== dto.status ||
+				dayInfoForStat.shiftNumber !== dto.shiftNumber ||
+				dayInfoForStat.isAdditional !== dto.isAdditional
+			) {
+				await this.statisticsOperations.updateStat({
+					date: dayInfoForStat.date,
+					userId,
+					type: TypeOperation.DECREMENT,
+					dto: dayInfoForStat,
+					statName: StatName.WORK,
+				})
+				await this.statisticsOperations.updateStat({
+					date: day.date,
+					userId,
+					type: TypeOperation.INCREMENT,
+					dto: { date: day.date, ...dto },
+					statName: StatName.WORK,
+				})
+			}
+
+			const updatedDay = await this.DayModel.findByIdAndUpdate(dayId, dto, {
+				new: true,
 			})
-			await this.statisticsOperations.updateStat({
-				date: day.date,
-				userId,
-				type: TypeOperation.INCREMENT,
-				dto: { date: day.date, ...dto },
-				statName: StatName.WORK,
-			})
+
+			return {
+				success: true,
+				statusCode: HttpStatus.OK,
+				data: updatedDay,
+			}
 		}
-
-		return await this.DayModel.findByIdAndUpdate(dayId, dto, {
-			new: true,
-		})
 	}
 
-	async delete(dayId: string, userId: string) {
+	async delete(dayId: string, userId: string): Promise<ResponseType> {
 		await this.checkDayFromDb(dayId)
 		const deletedDay = await this.DayModel.findByIdAndDelete(dayId)
 		const dayInfoForStat = this.statisticsOperations.getDayInfo(deletedDay)
@@ -81,11 +98,14 @@ export class CalendarService {
 			statName: StatName.WORK,
 		})
 
-		return
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async deleteAll(userId: string) {
-		const allDays = await this.getAll(userId)
+	async deleteAll(userId: string): Promise<ResponseType> {
+		const allDays = await this.DayModel.find({ owner: userId })
 
 		for (const day of allDays) {
 			const dayInfoForStat = this.statisticsOperations.getDayInfo(day)
@@ -99,27 +119,60 @@ export class CalendarService {
 		}
 
 		await this.DayModel.deleteMany({ owner: userId })
-		return
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async getById(dayId: string) {
-		return await this.checkDayFromDb(dayId)
+	async getById(dayId: string): Promise<ResponseType<DayModel>> {
+		const day = await this.checkDayFromDb(dayId)
+
+		if ('_id' in day) {
+			return {
+				success: true,
+				statusCode: HttpStatus.OK,
+				data: day,
+			}
+		}
 	}
 
-	async getAll(userId: string) {
-		return await this.DayModel.find({ owner: userId })
+	async getAll(userId: string): Promise<ResponseType<DayModel[]>> {
+		const days = await this.DayModel.find({ owner: userId })
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: days,
+		}
 	}
 
 	// HELPERS
 
-	private async checkDayFromDb(dayId: string) {
+	private async checkDayFromDb(
+		dayId: string
+	): Promise<DayModel | ResponseType> {
 		const dayFromDb = await this.DayModel.findById(dayId)
-		if (!dayFromDb) throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+
+		if (!dayFromDb) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.NOT_FOUND_BY_ID,
+			}
+		}
 
 		return dayFromDb
 	}
 
 	private checkDto(dto: any) {
-		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
+		if (!dto) {
+			return {
+				success: false,
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: ErrorMessages.BAD_REQUEST,
+			}
+		}
 	}
 }

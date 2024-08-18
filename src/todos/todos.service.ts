@@ -32,7 +32,7 @@ export class TodosService {
 		const todoInfoForStat = this.statisticsOperations.getTodoInfo(createdTodo)
 
 		await this.statisticsOperations.updateStat({
-			date: day.date,
+			date: day.data.date,
 			userId,
 			type: TypeOperation.INCREMENT,
 			dto: todoInfoForStat,
@@ -51,14 +51,14 @@ export class TodosService {
 
 		if (todoInfoForStat.priority !== dto.priority) {
 			await this.statisticsOperations.updateStat({
-				date: day.date,
+				date: day.data.date,
 				userId,
 				type: TypeOperation.DECREMENT,
 				dto: todoInfoForStat,
 				statName: StatName.TODO,
 			})
 			await this.statisticsOperations.updateStat({
-				date: day.date,
+				date: day.data.date,
 				userId,
 				type: TypeOperation.INCREMENT,
 				dto: { priority: dto.priority },
@@ -83,7 +83,7 @@ export class TodosService {
 
 		if (dto.isCompleted) {
 			await this.statisticsOperations.updateStat({
-				date: day.date,
+				date: day.data.date,
 				userId,
 				type: TypeOperation.INCREMENT,
 				dto: { isCompleted: dto.isCompleted },
@@ -91,7 +91,7 @@ export class TodosService {
 			})
 		} else {
 			await this.statisticsOperations.updateStat({
-				date: day.date,
+				date: day.data.date,
 				userId,
 				type: TypeOperation.DECREMENT,
 				dto: { isCompleted: dto.isCompleted },
@@ -113,7 +113,7 @@ export class TodosService {
 		const todoInfoForStat = this.statisticsOperations.getTodoInfo(deletedTodo)
 
 		await this.statisticsOperations.updateStat({
-			date: day.date,
+			date: day.data.date,
 			userId,
 			type: TypeOperation.DECREMENT,
 			dto: todoInfoForStat,
@@ -127,7 +127,8 @@ export class TodosService {
 		const allTodos = await this.getAll(userId)
 
 		for (const todo of allTodos) {
-			const { date } = await this.calendarService.getById(String(todo.day))
+			const response = await this.calendarService.getById(String(todo.day))
+			const date = response.data.date
 			const todoId = String(todo._id)
 			const updatedDto = { isCompleted: false }
 
@@ -166,7 +167,8 @@ export class TodosService {
 		const allTodosByDay = await this.getTodoByDay(dayId, userId)
 
 		for (const todo of allTodosByDay) {
-			const { date } = await this.calendarService.getById(String(todo.day))
+			const response = await this.calendarService.getById(String(todo.day))
+			const date = response.data.date
 			const todoId = String(todo._id)
 			const updatedDto = { isCompleted: false }
 
