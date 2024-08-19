@@ -1,11 +1,7 @@
-import {
-	BadRequestException,
-	ConflictException,
-	Injectable,
-	NotFoundException,
-} from '@nestjs/common'
+import { HttpStatus, Injectable } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
+import { ResponseType } from 'src/common/response.type'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { AddedVacationDto } from './dto/added-vacation.dto'
 import { ChangeAmountHoursDto } from './dto/change-amount-hours.dto'
@@ -19,15 +15,23 @@ export class VacationService {
 		private readonly VacationModel: ModelType<VacationModel>
 	) {}
 
-	async added(userId: string, dto: AddedVacationDto) {
+	async added(
+		userId: string,
+		dto: AddedVacationDto
+	): Promise<ResponseType<VacationModel>> {
 		const { usedHours, amountHours } = dto
-		this.checkDto(dto)
+		await this.checkDto(dto)
 
 		const year = new Date().getFullYear()
 		const vacationFromDb = await this.VacationModel.findOne({ year })
 
-		if (vacationFromDb)
-			throw new ConflictException(ErrorMessages.VACATION_ALREADY)
+		if (vacationFromDb) {
+			return {
+				success: false,
+				statusCode: HttpStatus.CONFLICT,
+				message: ErrorMessages.VACATION_ALREADY,
+			}
+		}
 
 		let hoursLeft = 0
 		if (usedHours && usedHours > 0) {
@@ -35,28 +39,46 @@ export class VacationService {
 		}
 
 		const data = { ...dto, owner: userId, hoursLeft }
-		return await this.VacationModel.create(data)
+		const vacationInfo = await this.VacationModel.create(data)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.CREATED,
+			data: vacationInfo,
+		}
 	}
 
-	async useVacation(vacationId: string, dto: UseVacationDto) {
-		this.checkDto(dto)
+	async useVacation(
+		vacationId: string,
+		dto: UseVacationDto
+	): Promise<ResponseType<VacationModel>> {
+		await this.checkDto(dto)
 		const vacationFromDb = await this.checkVacationFromDb(vacationId)
 
-		let hoursLeft = vacationFromDb.hoursLeft - dto.usedHours
-		let usedHours = vacationFromDb.usedHours + dto.usedHours
+		if ('_id' in vacationFromDb) {
+			let hoursLeft = vacationFromDb.hoursLeft - dto.usedHours
+			let usedHours = vacationFromDb.usedHours + dto.usedHours
 
-		const updatedVacation = await this.VacationModel.findByIdAndUpdate(
-			vacationId,
-			{ hoursLeft, usedHours },
-			{ new: true }
-		)
+			const updatedVacation = await this.VacationModel.findByIdAndUpdate(
+				vacationId,
+				{ hoursLeft, usedHours },
+				{ new: true }
+			)
 
-		return updatedVacation
+			return {
+				success: true,
+				statusCode: HttpStatus.OK,
+				data: updatedVacation,
+			}
+		}
 	}
 
-	async changeAmountHours(vacationId: string, dto: ChangeAmountHoursDto) {
+	async changeAmountHours(
+		vacationId: string,
+		dto: ChangeAmountHoursDto
+	): Promise<ResponseType<VacationModel>> {
 		const { amountHours } = dto
-		this.checkDto(dto)
+		await this.checkDto(dto)
 		await this.checkVacationFromDb(vacationId)
 
 		const updatedVacation = await this.VacationModel.findByIdAndUpdate(
@@ -65,38 +87,78 @@ export class VacationService {
 			{ new: true }
 		)
 
-		return updatedVacation
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: updatedVacation,
+		}
 	}
 
-	async getById(vacationId: string) {
-		return await this.checkVacationFromDb(vacationId)
+	async getById(vacationId: string): Promise<ResponseType<VacationModel>> {
+		const vacationInfo = await this.checkVacationFromDb(vacationId)
+
+		if ('_id' in vacationInfo) {
+			return {
+				success: true,
+				statusCode: HttpStatus.OK,
+				data: vacationInfo,
+			}
+		}
 	}
 
-	async getAll(userId: string) {
-		return await this.VacationModel.find({ owner: userId })
+	async getAll(userId: string): Promise<ResponseType<VacationModel[]>> {
+		const vacations = await this.VacationModel.find({ owner: userId })
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: vacations,
+		}
 	}
 
-	async delete(vacationId: string) {
+	async delete(vacationId: string): Promise<ResponseType> {
 		await this.checkVacationFromDb(vacationId)
 		await this.VacationModel.findByIdAndDelete(vacationId)
-		return
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async deleteAll(userId: string) {
+	async deleteAll(userId: string): Promise<ResponseType> {
 		await this.VacationModel.deleteMany({ owner: userId })
-		return
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
 	// HELPERS
 
-	private checkDto(dto: any) {
-		if (!dto) throw new BadRequestException(ErrorMessages.BAD_REQUEST)
+	private async checkDto(dto: any): Promise<ResponseType> {
+		if (!dto) {
+			return {
+				success: false,
+				statusCode: HttpStatus.BAD_REQUEST,
+				message: ErrorMessages.BAD_REQUEST,
+			}
+		}
 	}
 
-	private async checkVacationFromDb(vacationId: string) {
+	private async checkVacationFromDb(
+		vacationId: string
+	): Promise<VacationModel | ResponseType> {
 		const vacationFromDb = await this.VacationModel.findById(vacationId)
-		if (!vacationFromDb)
-			throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+
+		if (!vacationFromDb) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.NOT_FOUND_BY_ID,
+			}
+		}
 
 		return vacationFromDb
 	}
