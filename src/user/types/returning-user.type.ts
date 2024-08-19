@@ -13,8 +13,8 @@ export type ReturningUser = {
 	email: string
 	gender: Gender
 	description: string
-	avatarUrl: string[]
-	posterUrl: string[]
+	avatarUrls: string[]
+	posterUrls: string[]
 	isActivated: boolean
 	createdAt: Date
 	updatedAt: Date
