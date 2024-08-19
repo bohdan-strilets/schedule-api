@@ -370,7 +370,7 @@ export class UserService {
 
 	// HELPERS
 
-	returnUserFields(user: UserModel) {
+	returnUserFields(user: UserModel): ReturningUser {
 		return {
 			_id: user._id,
 			firstName: user.firstName,

@@ -26,7 +26,7 @@ export class CalendarController {
 	async added(
 		@Body() dto: AddedDayDto,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<DayModel>> {
 		const data = await this.calendarService.added(_id, dto)
 
@@ -42,7 +42,7 @@ export class CalendarController {
 		@Body() dto: UpdateDayDto,
 		@Param('dayId') dayId: string,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<DayModel>> {
 		const data = await this.calendarService.update(dayId, dto, _id)
 
@@ -57,7 +57,7 @@ export class CalendarController {
 	async delete(
 		@Param('dayId') dayId: string,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.calendarService.delete(dayId, _id)
 
@@ -71,7 +71,7 @@ export class CalendarController {
 	@Delete('delete-all')
 	async deleteAll(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.calendarService.deleteAll(_id)
 
@@ -85,7 +85,7 @@ export class CalendarController {
 	@Get('by-id/:dayId')
 	async getById(
 		@Param('dayId') dayId: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<DayModel>> {
 		const data = await this.calendarService.getById(dayId)
 
@@ -99,7 +99,7 @@ export class CalendarController {
 	@Get('all')
 	async getAll(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<DayModel[]>> {
 		const data = await this.calendarService.getAll(_id)
 

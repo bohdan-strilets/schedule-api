@@ -34,7 +34,7 @@ export class UserController {
 	@Get('activation-email/:activationToken')
 	async activationEmail(
 		@Param('activationToken') activationToken: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.activationEmail(activationToken)
 
@@ -49,7 +49,7 @@ export class UserController {
 	@Post('request-repeat-activation-email')
 	async requestRepeatActivationEmail(
 		@Body() dto: EmailDto,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.requestRepeatActivationEmail(dto)
 
@@ -65,7 +65,7 @@ export class UserController {
 	async changeProfile(
 		@Body() dto: ChangeProfileDto,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.changeProfile(_id, dto)
 
@@ -81,7 +81,7 @@ export class UserController {
 	async changeEmail(
 		@Body() dto: EmailDto,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.changeEmail(_id, dto)
 
@@ -96,7 +96,7 @@ export class UserController {
 	@Post('request-reset-password')
 	async requestResetPassword(
 		@Body() dto: EmailDto,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.requestResetPassword(dto)
 
@@ -111,7 +111,7 @@ export class UserController {
 	@Post('reset-password')
 	async resetPassword(
 		@Body() dto: ResetPasswordDto,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.resetPassword(dto)
 
@@ -127,7 +127,7 @@ export class UserController {
 	async changePassword(
 		@Body() dto: ChangePasswordDto,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.changePassword(dto, _id)
 
@@ -148,7 +148,7 @@ export class UserController {
 		@UploadedFile(imageValidator)
 		file: Express.Multer.File,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<string[]>> {
 		const data = await this.userService.uploadAvatar(file, _id)
 
@@ -169,7 +169,7 @@ export class UserController {
 		@UploadedFile(imageValidator)
 		file: Express.Multer.File,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<string[]>> {
 		const data = await this.userService.uploadPoster(file, _id)
 
@@ -184,7 +184,7 @@ export class UserController {
 	@Delete('delete-profile')
 	async deleteProfile(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.deleteProfile(_id)
 
@@ -200,7 +200,7 @@ export class UserController {
 	async changeAddress(
 		@Body() dto: ChangeAddressDto,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.changeAddress(dto, _id)
 
@@ -215,7 +215,7 @@ export class UserController {
 	@Get('current-user')
 	async getCurrentUser(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.getCurrentUser(_id)
 

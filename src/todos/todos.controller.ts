@@ -27,7 +27,7 @@ export class TodosController {
 	async create(
 		@Body() dto: CreateTodoDto,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel>> {
 		const data = await this.todosService.create(_id, dto)
 
@@ -43,7 +43,7 @@ export class TodosController {
 		@Body() dto: UpdateTodoDto,
 		@Param('todoId') todoId: string,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel>> {
 		const data = await this.todosService.update(todoId, dto, _id)
 
@@ -59,7 +59,7 @@ export class TodosController {
 		@Body() dto: UpdateCompletedDto,
 		@Param('todoId') todoId: string,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel>> {
 		const data = await this.todosService.updateCompleted(todoId, dto, _id)
 
@@ -74,7 +74,7 @@ export class TodosController {
 	async delete(
 		@Param('todoId') todoId: string,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.todosService.delete(todoId, _id)
 
@@ -88,7 +88,7 @@ export class TodosController {
 	@Delete('delete-all')
 	async deleteAll(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.todosService.deleteAll(_id)
 
@@ -103,7 +103,7 @@ export class TodosController {
 	async deleteByDay(
 		@Param('dayId') dayId: string,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.todosService.deleteByDay(dayId, _id)
 
@@ -117,7 +117,7 @@ export class TodosController {
 	@Get('by-id/:todoId')
 	async getById(
 		@Param('todoId') todoId: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel>> {
 		const data = await this.todosService.getById(todoId)
 
@@ -131,7 +131,7 @@ export class TodosController {
 	@Get('all')
 	async getAll(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel[]>> {
 		const data = await this.todosService.getAll(_id)
 
@@ -146,7 +146,7 @@ export class TodosController {
 	async getTodoByDay(
 		@Param('dayId') dayId: string,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel[]>> {
 		const data = await this.todosService.getTodoByDay(dayId, _id)
 

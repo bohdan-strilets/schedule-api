@@ -26,7 +26,7 @@ export class CompanyController {
 	async create(
 		@Body() dto: CreateCompanyDto,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<CompanyModel>> {
 		const data = await this.companyService.create(_id, dto)
 
@@ -41,7 +41,7 @@ export class CompanyController {
 	async update(
 		@Body() dto: UpdateCompanyDto,
 		@Param('companyId') companyId: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<CompanyModel>> {
 		const data = await this.companyService.update(companyId, dto)
 
@@ -55,7 +55,7 @@ export class CompanyController {
 	@Delete('delete/:companyId')
 	async delete(
 		@Param('companyId') companyId: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.companyService.delete(companyId)
 
@@ -69,7 +69,7 @@ export class CompanyController {
 	@Delete('delete-all')
 	async deleteAll(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.companyService.deleteAll(_id)
 
@@ -83,7 +83,7 @@ export class CompanyController {
 	@Get('by-id/:companyId')
 	async getById(
 		@Param('companyId') companyId: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<CompanyModel>> {
 		const data = await this.companyService.getById(companyId)
 
@@ -97,7 +97,7 @@ export class CompanyController {
 	@Get('all')
 	async getAll(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<CompanyModel[]>> {
 		const data = await this.companyService.getAll(_id)
 

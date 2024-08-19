@@ -14,7 +14,7 @@ export class StatisticsController {
 	@Get('/:statId')
 	async getStat(
 		@Param('statId') statId: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<StatisticsModel> | ResponseType> {
 		const data = await this.statisticsService.getStat(statId)
 
@@ -28,7 +28,7 @@ export class StatisticsController {
 	@Delete('/delete')
 	async delete(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.statisticsService.delete(_id)
 

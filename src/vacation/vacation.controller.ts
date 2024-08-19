@@ -27,7 +27,7 @@ export class VacationController {
 	async added(
 		@Body() dto: AddedVacationDto,
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<VacationModel>> {
 		const data = await this.vacationService.added(_id, dto)
 
@@ -42,7 +42,7 @@ export class VacationController {
 	async useVacation(
 		@Body() dto: UseVacationDto,
 		@Param('vacationId') vacationId: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<VacationModel>> {
 		const data = await this.vacationService.useVacation(vacationId, dto)
 
@@ -57,7 +57,7 @@ export class VacationController {
 	async changeAmountHours(
 		@Body() dto: ChangeAmountHoursDto,
 		@Param('vacationId') vacationId: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<VacationModel>> {
 		const data = await this.vacationService.changeAmountHours(vacationId, dto)
 
@@ -71,7 +71,7 @@ export class VacationController {
 	@Get('by-id/:vacationId')
 	async getById(
 		@Param('vacationId') vacationId: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<VacationModel>> {
 		const data = await this.vacationService.getById(vacationId)
 
@@ -85,7 +85,7 @@ export class VacationController {
 	@Get('all')
 	async getAll(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<VacationModel[]>> {
 		const data = await this.vacationService.getAll(_id)
 
@@ -99,7 +99,7 @@ export class VacationController {
 	@Delete('delete/:vacationId')
 	async delete(
 		@Param('vacationId') vacationId: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.vacationService.delete(vacationId)
 
@@ -113,7 +113,7 @@ export class VacationController {
 	@Delete('delete-all')
 	async deleteAll(
 		@User('_id') _id: string,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.vacationService.deleteAll(_id)
 
