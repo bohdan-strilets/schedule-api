@@ -1,11 +1,13 @@
 import {
 	BadRequestException,
+	HttpStatus,
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
 import { CalendarService } from 'src/calendar/calendar.service'
+import { ResponseType } from 'src/common/response.type'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { StatName } from 'src/statistics/enums/stat-name.enum'
 import { TypeOperation } from 'src/statistics/enums/type-operation.enum'
@@ -24,7 +26,10 @@ export class TodosService {
 		private readonly calendarService: CalendarService
 	) {}
 
-	async create(userId: string, dto: CreateTodoDto) {
+	async create(
+		userId: string,
+		dto: CreateTodoDto
+	): Promise<ResponseType<TodoModel>> {
 		this.checkDto(dto)
 		const data = { ...dto, owner: userId }
 		const day = await this.calendarService.getById(dto.day)
@@ -39,10 +44,18 @@ export class TodosService {
 			statName: StatName.TODO,
 		})
 
-		return createdTodo
+		return {
+			success: true,
+			statusCode: HttpStatus.CREATED,
+			data: createdTodo,
+		}
 	}
 
-	async update(todoId: string, dto: UpdateTodoDto, userId: string) {
+	async update(
+		todoId: string,
+		dto: UpdateTodoDto,
+		userId: string
+	): Promise<ResponseType<TodoModel>> {
 		this.checkDto(dto)
 
 		const todo = await this.checkTodoFromDb(todoId)
@@ -66,16 +79,22 @@ export class TodosService {
 			})
 		}
 
-		return await this.TodoModel.findByIdAndUpdate(todoId, dto, {
+		const updatedTodo = await this.TodoModel.findByIdAndUpdate(todoId, dto, {
 			new: true,
 		})
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: updatedTodo,
+		}
 	}
 
 	async updateCompleted(
 		todoId: string,
 		dto: UpdateCompletedDto,
 		userId: string
-	) {
+	): Promise<ResponseType<TodoModel>> {
 		this.checkDto(dto)
 
 		const todo = await this.checkTodoFromDb(todoId)
@@ -99,14 +118,20 @@ export class TodosService {
 			})
 		}
 
-		return await this.TodoModel.findByIdAndUpdate(
+		const updatedTodo = await this.TodoModel.findByIdAndUpdate(
 			todoId,
 			{ ...dto },
 			{ new: true }
 		)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: updatedTodo,
+		}
 	}
 
-	async delete(todoId: string, userId: string) {
+	async delete(todoId: string, userId: string): Promise<ResponseType> {
 		await this.checkTodoFromDb(todoId)
 		const deletedTodo = await this.TodoModel.findByIdAndDelete(todoId)
 		const day = await this.calendarService.getById(String(deletedTodo.day))
@@ -120,11 +145,14 @@ export class TodosService {
 			statName: StatName.TODO,
 		})
 
-		return
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async deleteAll(userId: string) {
-		const allTodos = await this.getAll(userId)
+	async deleteAll(userId: string): Promise<ResponseType> {
+		const allTodos = await this.TodoModel.find({ owner: userId })
 
 		for (const todo of allTodos) {
 			const response = await this.calendarService.getById(String(todo.day))
@@ -139,7 +167,9 @@ export class TodosService {
 					userId
 				)
 
-				const infoForStat = this.statisticsOperations.getTodoInfo(updatedTodo)
+				const infoForStat = this.statisticsOperations.getTodoInfo(
+					updatedTodo.data
+				)
 				await this.statisticsOperations.updateStat({
 					date,
 					userId,
@@ -160,11 +190,18 @@ export class TodosService {
 		}
 
 		await this.TodoModel.deleteMany({ owner: userId })
-		return
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async deleteByDay(dayId: string, userId: string) {
-		const allTodosByDay = await this.getTodoByDay(dayId, userId)
+	async deleteByDay(dayId: string, userId: string): Promise<ResponseType> {
+		const allTodosByDay = await this.TodoModel.find({
+			day: dayId,
+			owner: userId,
+		})
 
 		for (const todo of allTodosByDay) {
 			const response = await this.calendarService.getById(String(todo.day))
@@ -179,7 +216,9 @@ export class TodosService {
 					userId
 				)
 
-				const infoForStat = this.statisticsOperations.getTodoInfo(updatedTodo)
+				const infoForStat = this.statisticsOperations.getTodoInfo(
+					updatedTodo.data
+				)
 				await this.statisticsOperations.updateStat({
 					date,
 					userId,
@@ -200,22 +239,53 @@ export class TodosService {
 		}
 
 		await this.TodoModel.deleteMany({ day: dayId })
-		return
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+		}
 	}
 
-	async getById(todoId: string) {
-		return await this.checkTodoFromDb(todoId)
+	async getById(todoId: string): Promise<ResponseType<TodoModel>> {
+		const todo = await this.checkTodoFromDb(todoId)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: todo,
+		}
 	}
 
-	async getAll(userId: string) {
-		return await this.TodoModel.find({ owner: userId })
+	async getAll(userId: string): Promise<ResponseType<TodoModel[]>> {
+		const todos = await this.TodoModel.find({ owner: userId })
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: todos,
+		}
 	}
 
-	async getTodoByDay(dayId: string, userId: string) {
+	async getTodoByDay(
+		dayId: string,
+		userId: string
+	): Promise<ResponseType<TodoModel[]>> {
 		const todoFromDb = await this.TodoModel.findOne({ day: dayId })
-		if (!todoFromDb) throw new NotFoundException(ErrorMessages.NOT_FOUND_BY_ID)
+		if (!todoFromDb) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.NOT_FOUND_BY_ID,
+			}
+		}
 
-		return await this.TodoModel.find({ day: dayId, owner: userId })
+		const todos = await this.TodoModel.find({ day: dayId, owner: userId })
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: todos,
+		}
 	}
 
 	// HELPERS
