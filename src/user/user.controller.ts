@@ -12,6 +12,7 @@ import {
 	UploadedFile,
 	UseInterceptors,
 } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { Response } from 'express'
 import { Auth } from 'src/auth/decorators/auth.decorator'
@@ -29,13 +30,19 @@ import { UserService } from './user.service'
 
 @Controller('user')
 export class UserController {
-	constructor(private readonly userService: UserService) {}
+	constructor(
+		private readonly userService: UserService,
+		private readonly configService: ConfigService
+	) {}
 
 	@Get('activation-email/:activationToken')
 	async activationEmail(
 		@Param('activationToken') activationToken: string,
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
+		const clientUrl = this.configService.get<string>('CLIENT_URL')
+		res.redirect(`${clientUrl}/activation-success`)
+
 		const data = await this.userService.activationEmail(activationToken)
 
 		if (!data.success) {
