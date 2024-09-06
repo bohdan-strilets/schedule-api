@@ -19,7 +19,6 @@ import { Auth } from 'src/auth/decorators/auth.decorator'
 import { ResponseType } from 'src/common/response.type'
 import { DEFAULT_FOLDER_FOR_FILES } from 'src/common/vars/default-file-folder'
 import { User } from './decorators/user.decorator'
-import { ChangeAddressDto } from './dto/change-address.dto'
 import { ChangePasswordDto } from './dto/change-password.dto'
 import { ChangeProfileDto } from './dto/change-profile.dto'
 import { EmailDto } from './dto/email.dto'
@@ -167,49 +166,12 @@ export class UserController {
 	}
 
 	@Auth()
-	@HttpCode(HttpStatus.OK)
-	@Post('upload-poster')
-	@UseInterceptors(
-		FileInterceptor('poster', { dest: DEFAULT_FOLDER_FOR_FILES })
-	)
-	async uploadPoster(
-		@UploadedFile(imageValidator)
-		file: Express.Multer.File,
-		@User('_id') _id: string,
-		@Res({ passthrough: true }) res: Response
-	): Promise<ResponseType<string[]>> {
-		const data = await this.userService.uploadPoster(file, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
-		return data
-	}
-
-	@Auth()
 	@Delete('delete-profile')
 	async deleteProfile(
 		@User('_id') _id: string,
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.deleteProfile(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
-		return data
-	}
-
-	@Auth()
-	@Patch('change-address')
-	async changeAddress(
-		@Body() dto: ChangeAddressDto,
-		@User('_id') _id: string,
-		@Res({ passthrough: true }) res: Response
-	): Promise<ResponseType<ReturningUser>> {
-		const data = await this.userService.changeAddress(dto, _id)
 
 		if (!data.success) {
 			res.status(data.statusCode)

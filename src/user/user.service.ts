@@ -15,7 +15,6 @@ import { StatisticsService } from 'src/statistics/statistics.service'
 import { TodosService } from 'src/todos/todos.service'
 import { VacationService } from 'src/vacation/vacation.service'
 import { v4 } from 'uuid'
-import { ChangeAddressDto } from './dto/change-address.dto'
 import { ChangePasswordDto } from './dto/change-password.dto'
 import { ChangeProfileDto } from './dto/change-profile.dto'
 import { EmailDto } from './dto/email.dto'
@@ -254,41 +253,6 @@ export class UserService {
 		}
 	}
 
-	async uploadPoster(
-		file: Express.Multer.File,
-		userId: string
-	): Promise<ResponseType<string[]>> {
-		const user = await this.findById(userId)
-
-		if (!user) {
-			return {
-				success: false,
-				statusCode: HttpStatus.NOT_FOUND,
-				message: ErrorMessages.USER_NOT_FOUND,
-			}
-		}
-
-		const posterPath = `${CloudinaryFolders.USER_POSTER}${userId}`
-		const resultPath = await this.cloudinaryService.uploadFile(
-			file,
-			FileType.IMAGE,
-			posterPath
-		)
-
-		fs.unlinkSync(file.path)
-		const updatedUser = await this.UserModel.findByIdAndUpdate(
-			userId,
-			{ $push: { posterUrls: resultPath } },
-			{ new: true }
-		)
-
-		return {
-			success: true,
-			statusCode: HttpStatus.OK,
-			data: updatedUser.posterUrls,
-		}
-	}
-
 	async deleteProfile(userId: string): Promise<ResponseType> {
 		const user = await this.findById(userId)
 
@@ -305,9 +269,6 @@ export class UserService {
 		const avatars = user.avatarUrls
 		await this.deleteUserFiles(avatars)
 
-		const posters = user.posterUrls
-		await this.deleteUserFiles(posters)
-
 		await this.companyService.deleteAll(userId)
 		await this.calendarService.deleteAll(userId)
 		await this.statisticsService.delete(userId)
@@ -317,34 +278,6 @@ export class UserService {
 		return {
 			success: true,
 			statusCode: HttpStatus.OK,
-		}
-	}
-
-	async changeAddress(
-		dto: ChangeAddressDto,
-		userId: string
-	): Promise<ResponseType<ReturningUser>> {
-		const location = { location: { ...dto } }
-		const updatedUser = await this.UserModel.findByIdAndUpdate(
-			userId,
-			location,
-			{ new: true }
-		)
-
-		if (!updatedUser) {
-			return {
-				success: false,
-				statusCode: HttpStatus.UNAUTHORIZED,
-				message: ErrorMessages.USER_IS_NOT_UNAUTHORIZED,
-			}
-		}
-
-		const returningUser = this.returnUserFields(updatedUser)
-
-		return {
-			success: true,
-			statusCode: HttpStatus.OK,
-			data: returningUser,
 		}
 	}
 
@@ -375,15 +308,10 @@ export class UserService {
 			_id: user._id,
 			firstName: user.firstName,
 			lastName: user.lastName,
-			nickname: user.nickname,
 			dateBirth: user.dateBirth,
-			location: user.location,
-			phoneNumber: user.phoneNumber,
 			email: user.email,
 			gender: user.gender,
-			description: user.description,
 			avatarUrls: user.avatarUrls,
-			posterUrls: user.posterUrls,
 			isActivated: user.isActivated,
 			createdAt: user.createdAt,
 			updatedAt: user.updatedAt,
