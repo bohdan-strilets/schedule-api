@@ -4,7 +4,7 @@ import {
 	ParseFilePipe,
 } from '@nestjs/common'
 
-const allowedFileTypes = /(jpeg|png|gif|webp)/
+const allowedFileTypes = /(jpg|png|webp)/
 const maxSize = 8 * 1024 * 1024
 
 export const imageValidator = new ParseFilePipe({
