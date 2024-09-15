@@ -1,5 +1,4 @@
 import {
-	IsDateString,
 	IsIn,
 	IsOptional,
 	IsString,
@@ -25,9 +24,9 @@ export class ChangeProfileDto {
 	@MaxLength(MAX_NAME_LENGTH)
 	lastName?: string
 
-	@IsDateString()
+	@IsString()
 	@IsOptional()
-	dateBirth?: Date
+	dateBirth?: string
 
 	@IsString()
 	@IsIn(Object.values(Gender))

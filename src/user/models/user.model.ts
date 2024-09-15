@@ -13,7 +13,7 @@ export class UserModel extends TimeStamps {
 	lastName: string
 
 	@prop()
-	dateBirth: Date
+	dateBirth: string
 
 	@prop({ unique: true })
 	email: string

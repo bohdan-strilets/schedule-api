@@ -5,7 +5,7 @@ export type ReturningUser = {
 	_id: Types.ObjectId
 	firstName: string
 	lastName: string
-	dateBirth: Date
+	dateBirth: string
 	email: string
 	gender: Gender
 	avatarUrls: string[]
