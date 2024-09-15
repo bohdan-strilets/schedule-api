@@ -121,7 +121,10 @@ export class UserService {
 		}
 	}
 
-	async changeEmail(userId: string, dto: EmailDto): Promise<ResponseType> {
+	async changeEmail(
+		userId: string,
+		dto: EmailDto
+	): Promise<ResponseType<ReturningUser>> {
 		if (!userId) {
 			return {
 				success: false,
@@ -137,11 +140,18 @@ export class UserService {
 		)
 
 		const emailDto = { email: dto.email, activationToken, isActivated: false }
-		await this.UserModel.findByIdAndUpdate(userId, emailDto, { new: true })
+		const updatedUser = await this.UserModel.findByIdAndUpdate(
+			userId,
+			emailDto,
+			{ new: true }
+		)
+
+		const returningUser = this.returnUserFields(updatedUser)
 
 		return {
 			success: true,
 			statusCode: HttpStatus.OK,
+			data: returningUser,
 		}
 	}
 

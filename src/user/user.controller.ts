@@ -88,7 +88,7 @@ export class UserController {
 		@Body() dto: EmailDto,
 		@User('_id') _id: string,
 		@Res({ passthrough: true }) res: Response
-	): Promise<ResponseType> {
+	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.changeEmail(_id, dto)
 
 		if (!data.success) {
