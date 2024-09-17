@@ -155,7 +155,7 @@ export class UserController {
 		file: Express.Multer.File,
 		@User('_id') _id: string,
 		@Res({ passthrough: true }) res: Response
-	): Promise<ResponseType<string[]>> {
+	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.uploadAvatar(file, _id)
 
 		if (!data.success) {

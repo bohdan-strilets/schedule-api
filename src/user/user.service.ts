@@ -231,7 +231,7 @@ export class UserService {
 	async uploadAvatar(
 		file: Express.Multer.File,
 		userId: string
-	): Promise<ResponseType<string[]>> {
+	): Promise<ResponseType<ReturningUser>> {
 		const user = await this.findById(userId)
 
 		if (!user) {
@@ -256,10 +256,12 @@ export class UserService {
 			{ new: true }
 		)
 
+		const returningUser = this.returnUserFields(updatedUser)
+
 		return {
 			success: true,
 			statusCode: HttpStatus.OK,
-			data: updatedUser.avatarUrls,
+			data: returningUser,
 		}
 	}
 
