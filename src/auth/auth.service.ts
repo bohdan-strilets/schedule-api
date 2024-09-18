@@ -4,7 +4,6 @@ import { ModelType } from '@typegoose/typegoose/lib/types'
 import { InjectModel } from 'nestjs-typegoose'
 import { ResponseType } from 'src/common/response.type'
 import { DefaultAvatarUrl } from 'src/common/vars/default-avatar'
-import { DefaultPosterUrl } from 'src/common/vars/default-poster'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { PasswordService } from 'src/password/password.service'
 import { SendgridService } from 'src/sendgrid/sendgrid.service'
@@ -52,7 +51,6 @@ export class AuthService {
 			activationToken,
 			password: hashPassword,
 			avatarUrls: [DefaultAvatarUrl],
-			posterUrls: [DefaultPosterUrl],
 		})
 
 		await this.statisticsService.create(String(createdUser._id))
