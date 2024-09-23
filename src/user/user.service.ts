@@ -265,6 +265,38 @@ export class UserService {
 		}
 	}
 
+	async deleteAvatar(avatarPublicId: string, userId: string) {
+		const user = await this.findById(userId)
+
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.USER_NOT_FOUND,
+			}
+		}
+
+		await this.cloudinaryService.deleteFile(avatarPublicId, FileType.IMAGE)
+
+		const updatedAvatarArr = user.avatarUrls.filter(
+			(item) => !item.includes(avatarPublicId)
+		)
+
+		const updatedUser = await this.UserModel.findByIdAndUpdate(
+			userId,
+			{ avatarUrls: updatedAvatarArr },
+			{ new: true }
+		)
+
+		const returningUser = this.returnUserFields(updatedUser)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: returningUser,
+		}
+	}
+
 	async deleteProfile(userId: string): Promise<ResponseType> {
 		const user = await this.findById(userId)
 

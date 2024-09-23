@@ -8,6 +8,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Query,
 	Res,
 	UploadedFile,
 	UseInterceptors,
@@ -157,6 +158,22 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.uploadAvatar(file, _id)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
+	}
+
+	@Auth()
+	@Delete('delete-avatar')
+	async deleteAvatar(
+		@User('_id') _id: string,
+		@Res({ passthrough: true }) res: Response,
+		@Query('avatarPublicId') avatarPublicId: string
+	): Promise<ResponseType<ReturningUser>> {
+		const data = await this.userService.deleteAvatar(avatarPublicId, _id)
 
 		if (!data.success) {
 			res.status(data.statusCode)
