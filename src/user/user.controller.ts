@@ -183,6 +183,22 @@ export class UserController {
 	}
 
 	@Auth()
+	@Patch('select-avatar')
+	async selectAvatar(
+		@User('_id') _id: string,
+		@Res({ passthrough: true }) res: Response,
+		@Query('avatarPublicId') avatarPublicId: string
+	): Promise<ResponseType<ReturningUser>> {
+		const data = await this.userService.selectAvatar(avatarPublicId, _id)
+
+		if (!data.success) {
+			res.status(data.statusCode)
+		}
+
+		return data
+	}
+
+	@Auth()
 	@Delete('delete-profile')
 	async deleteProfile(
 		@User('_id') _id: string,

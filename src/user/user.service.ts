@@ -265,7 +265,10 @@ export class UserService {
 		}
 	}
 
-	async deleteAvatar(avatarPublicId: string, userId: string) {
+	async deleteAvatar(
+		avatarPublicId: string,
+		userId: string
+	): Promise<ResponseType<ReturningUser>> {
 		const user = await this.findById(userId)
 
 		if (!user) {
@@ -285,6 +288,40 @@ export class UserService {
 		const updatedUser = await this.UserModel.findByIdAndUpdate(
 			userId,
 			{ avatarUrls: updatedAvatarArr },
+			{ new: true }
+		)
+
+		const returningUser = this.returnUserFields(updatedUser)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: returningUser,
+		}
+	}
+
+	async selectAvatar(
+		avatarPublicId: string,
+		userId: string
+	): Promise<ResponseType<ReturningUser>> {
+		const user = await this.findById(userId)
+		const avatars = user.avatarUrls
+
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.NOT_FOUND,
+				message: ErrorMessages.USER_NOT_FOUND,
+			}
+		}
+
+		const index = avatars.findIndex((item) => item.includes(avatarPublicId))
+		const [removedElement] = avatars.splice(index, 1)
+		avatars.push(removedElement)
+
+		const updatedUser = await this.UserModel.findByIdAndUpdate(
+			userId,
+			{ avatarUrls: avatars },
 			{ new: true }
 		)
 
