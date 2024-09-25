@@ -233,6 +233,7 @@ export class UserService {
 		userId: string
 	): Promise<ResponseType<ReturningUser>> {
 		const user = await this.findById(userId)
+		const avatars = user.avatarUrls
 
 		if (!user) {
 			return {
@@ -250,9 +251,15 @@ export class UserService {
 		)
 
 		fs.unlinkSync(file.path)
+
+		const avatarUrls =
+			user.avatarUrls.length === 1 && user.avatarUrls[0].includes('default')
+				? [resultPath]
+				: [...user.avatarUrls, resultPath]
+
 		const updatedUser = await this.UserModel.findByIdAndUpdate(
 			userId,
-			{ $push: { avatarUrls: resultPath } },
+			{ avatarUrls },
 			{ new: true }
 		)
 
