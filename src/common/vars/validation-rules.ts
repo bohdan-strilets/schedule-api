@@ -5,9 +5,9 @@ export const MIN_NAME_LENGTH = 2
 export const MAX_NAME_LENGTH = 70
 
 // COMPANY
-export const MIN_COMPANY_NAME = 20
+export const MIN_COMPANY_NAME = 5
 export const MAX_COMPANY_NAME = 50
-export const MIN_PROFESSION_LENGTH = 20
+export const MIN_PROFESSION_LENGTH = 5
 export const MAX_PROFESSION_LENGTH = 60
 export const MIN_SALARY_PER_HOUR = 0
 export const MAX_SALARY_PER_HOUR = 500
