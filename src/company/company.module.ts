@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { TypegooseModule } from 'nestjs-typegoose'
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module'
 import { CompanyController } from './company.controller'
 import { CompanyService } from './company.service'
 import { CompanyModel } from './models/company.model'
@@ -14,6 +15,7 @@ import { CompanyModel } from './models/company.model'
 				},
 			},
 		]),
+		CloudinaryModule,
 	],
 	controllers: [CompanyController],
 	providers: [CompanyService],

@@ -1,7 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { ModelType } from '@typegoose/typegoose/lib/types'
+import * as fs from 'fs'
 import { InjectModel } from 'nestjs-typegoose'
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service'
+import { FileType } from 'src/cloudinary/enums/file-type.enum'
 import { ResponseType } from 'src/common/response.type'
+import { CloudinaryFolders } from 'src/common/vars/cloudinary-folders'
 import { CompanyLogoUrl } from 'src/common/vars/company-logo'
 import { ErrorMessages } from 'src/common/vars/error-messages'
 import { CreateCompanyDto } from './dto/create-company.dto'
@@ -12,7 +16,8 @@ import { CompanyModel } from './models/company.model'
 export class CompanyService {
 	constructor(
 		@InjectModel(CompanyModel)
-		private readonly CompanyModel: ModelType<CompanyModel>
+		private readonly CompanyModel: ModelType<CompanyModel>,
+		private readonly cloudinaryService: CloudinaryService
 	) {}
 
 	async create(
@@ -90,6 +95,35 @@ export class CompanyService {
 			success: true,
 			statusCode: HttpStatus.OK,
 			data: companies,
+		}
+	}
+
+	async uploadLogo(
+		file: Express.Multer.File,
+		companyId: string,
+		userId: string
+	): Promise<ResponseType<CompanyModel>> {
+		await this.checkCompanyFromDb(companyId)
+
+		const logoPath = `${CloudinaryFolders.COMPANY_LOGO}${userId}`
+		const resultPath = await this.cloudinaryService.uploadFile(
+			file,
+			FileType.IMAGE,
+			logoPath
+		)
+
+		fs.unlinkSync(file.path)
+
+		const updatedCompany = await this.CompanyModel.findByIdAndUpdate(
+			companyId,
+			{ logoUrl: resultPath },
+			{ new: true }
+		)
+
+		return {
+			success: true,
+			statusCode: HttpStatus.OK,
+			data: updatedCompany,
 		}
 	}
 
