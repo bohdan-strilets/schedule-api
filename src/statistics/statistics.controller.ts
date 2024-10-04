@@ -17,11 +17,7 @@ export class StatisticsController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<StatisticsModel> | ResponseType> {
 		const data = await this.statisticsService.getStat(statId)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -31,11 +27,7 @@ export class StatisticsController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.statisticsService.delete(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 }

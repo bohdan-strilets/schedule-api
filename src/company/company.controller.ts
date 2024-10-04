@@ -37,11 +37,7 @@ export class CompanyController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<CompanyModel>> {
 		const data = await this.companyService.create(_id, dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -52,11 +48,7 @@ export class CompanyController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<CompanyModel>> {
 		const data = await this.companyService.update(companyId, dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -66,11 +58,7 @@ export class CompanyController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.companyService.delete(companyId)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -80,11 +68,7 @@ export class CompanyController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.companyService.deleteAll(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -94,11 +78,7 @@ export class CompanyController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<CompanyModel>> {
 		const data = await this.companyService.getById(companyId)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -108,11 +88,7 @@ export class CompanyController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<CompanyModel[]>> {
 		const data = await this.companyService.getAll(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 

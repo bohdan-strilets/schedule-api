@@ -30,11 +30,7 @@ export class TodosController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel>> {
 		const data = await this.todosService.create(_id, dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -46,11 +42,7 @@ export class TodosController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel>> {
 		const data = await this.todosService.update(todoId, dto, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -62,11 +54,7 @@ export class TodosController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel>> {
 		const data = await this.todosService.updateCompleted(todoId, dto, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -77,11 +65,7 @@ export class TodosController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.todosService.delete(todoId, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -91,11 +75,7 @@ export class TodosController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.todosService.deleteAll(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -106,11 +86,7 @@ export class TodosController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.todosService.deleteByDay(dayId, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -120,11 +96,7 @@ export class TodosController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel>> {
 		const data = await this.todosService.getById(todoId)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -134,11 +106,7 @@ export class TodosController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel[]>> {
 		const data = await this.todosService.getAll(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -149,11 +117,7 @@ export class TodosController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<TodoModel[]>> {
 		const data = await this.todosService.getTodoByDay(dayId, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 }

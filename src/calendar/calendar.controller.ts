@@ -29,11 +29,7 @@ export class CalendarController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<DayModel>> {
 		const data = await this.calendarService.added(_id, dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -45,11 +41,7 @@ export class CalendarController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<DayModel>> {
 		const data = await this.calendarService.update(dayId, dto, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -60,11 +52,7 @@ export class CalendarController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.calendarService.delete(dayId, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -74,11 +62,7 @@ export class CalendarController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.calendarService.deleteAll(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -88,11 +72,7 @@ export class CalendarController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<DayModel>> {
 		const data = await this.calendarService.getById(dayId)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -102,11 +82,7 @@ export class CalendarController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<DayModel[]>> {
 		const data = await this.calendarService.getAll(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 }

@@ -30,11 +30,7 @@ export class VacationController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<VacationModel>> {
 		const data = await this.vacationService.added(_id, dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -45,11 +41,7 @@ export class VacationController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<VacationModel>> {
 		const data = await this.vacationService.useVacation(vacationId, dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -60,11 +52,7 @@ export class VacationController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<VacationModel>> {
 		const data = await this.vacationService.changeAmountHours(vacationId, dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -74,11 +62,7 @@ export class VacationController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<VacationModel>> {
 		const data = await this.vacationService.getById(vacationId)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -88,11 +72,7 @@ export class VacationController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<VacationModel[]>> {
 		const data = await this.vacationService.getAll(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -102,11 +82,7 @@ export class VacationController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.vacationService.delete(vacationId)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -116,11 +92,7 @@ export class VacationController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.vacationService.deleteAll(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 }

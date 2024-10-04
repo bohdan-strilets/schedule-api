@@ -44,11 +44,7 @@ export class UserController {
 		res.redirect(`${clientUrl}/activation-success`)
 
 		const data = await this.userService.activationEmail(activationToken)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -59,11 +55,7 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.requestRepeatActivationEmail(dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -75,11 +67,7 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.changeProfile(_id, dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -91,11 +79,7 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.changeEmail(_id, dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -106,11 +90,7 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.requestResetPassword(dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -121,11 +101,7 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.resetPassword(dto)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -137,11 +113,7 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.changePassword(dto, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -158,11 +130,7 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.uploadAvatar(file, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -174,11 +142,7 @@ export class UserController {
 		@Query('avatarPublicId') avatarPublicId: string
 	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.deleteAvatar(avatarPublicId, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -190,11 +154,7 @@ export class UserController {
 		@Query('avatarPublicId') avatarPublicId: string
 	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.selectAvatar(avatarPublicId, _id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -205,11 +165,7 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType> {
 		const data = await this.userService.deleteProfile(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 
@@ -220,11 +176,7 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<ResponseType<ReturningUser>> {
 		const data = await this.userService.getCurrentUser(_id)
-
-		if (!data.success) {
-			res.status(data.statusCode)
-		}
-
+		if (!data.success) res.status(data.statusCode)
 		return data
 	}
 }
