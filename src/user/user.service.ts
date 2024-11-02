@@ -389,6 +389,41 @@ export class UserService {
 		}
 	}
 
+	async setCurrentPlaceWork(
+		userId: string,
+		companyId: string
+	): Promise<ResponseType<ReturningUser>> {
+		const user = await this.findById(userId)
+
+		if (!user) {
+			return {
+				success: false,
+				statusCode: HttpStatus.UNAUTHORIZED,
+				message: ErrorMessages.USER_IS_NOT_UNAUTHORIZED,
+			}
+		}
+
+		if (user.currentPlaceWork.toString() !== companyId) {
+			const updatedUser = await this.UserModel.findByIdAndUpdate(
+				userId,
+				{ currentPlaceWork: companyId },
+				{ new: true }
+			)
+
+			return {
+				success: true,
+				statusCode: HttpStatus.OK,
+				data: updatedUser,
+			}
+		}
+
+		return {
+			success: false,
+			statusCode: HttpStatus.BAD_REQUEST,
+			message: ErrorMessages.BAD_REQUEST,
+		}
+	}
+
 	// HELPERS
 
 	returnUserFields(user: UserModel): ReturningUser {
@@ -403,6 +438,7 @@ export class UserService {
 			isActivated: user.isActivated,
 			createdAt: user.createdAt,
 			updatedAt: user.updatedAt,
+			currentPlaceWork: user.currentPlaceWork,
 		}
 	}
 

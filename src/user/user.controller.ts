@@ -179,4 +179,16 @@ export class UserController {
 		if (!data.success) res.status(data.statusCode)
 		return data
 	}
+
+	@Auth()
+	@Patch('set-place-work')
+	async setCurrentPlaceWork(
+		@User('_id') _id: string,
+		@Res({ passthrough: true }) res: Response,
+		@Query('companyId') companyId: string
+	): Promise<ResponseType<ReturningUser>> {
+		const data = await this.userService.setCurrentPlaceWork(_id, companyId)
+		if (!data.success) res.status(data.statusCode)
+		return data
+	}
 }

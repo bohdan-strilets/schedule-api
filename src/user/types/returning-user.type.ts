@@ -1,4 +1,6 @@
+import { Ref } from '@typegoose/typegoose'
 import { Types } from 'mongoose'
+import { CompanyModel } from 'src/company/models/company.model'
 import { Gender } from '../enums/gender.enum'
 
 export type ReturningUser = {
@@ -10,6 +12,7 @@ export type ReturningUser = {
 	gender: Gender
 	avatarUrls: string[]
 	isActivated: boolean
-	createdAt: Date
-	updatedAt: Date
+	createdAt?: Date
+	updatedAt?: Date
+	currentPlaceWork?: null | Ref<CompanyModel>
 }

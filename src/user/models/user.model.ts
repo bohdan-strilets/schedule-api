@@ -1,5 +1,6 @@
-import { modelOptions, prop } from '@typegoose/typegoose'
+import { modelOptions, prop, Ref } from '@typegoose/typegoose'
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
+import { CompanyModel } from 'src/company/models/company.model'
 import { Gender } from '../enums/gender.enum'
 
 export interface UserModel extends Base {}
@@ -32,4 +33,7 @@ export class UserModel extends TimeStamps {
 
 	@prop({ default: false })
 	isActivated: boolean
+
+	@prop({ ref: () => CompanyModel, default: null })
+	currentPlaceWork?: Ref<CompanyModel>
 }
