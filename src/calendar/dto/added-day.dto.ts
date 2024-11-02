@@ -26,6 +26,9 @@ export class AddedDayDto {
 	@IsIn(Object.values(Status))
 	status: Status
 
+	@IsString()
+	companyId: string
+
 	@IsPositive()
 	@IsOptional()
 	@Min(MIN_NUMBER_HOURS)

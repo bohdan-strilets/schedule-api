@@ -1,5 +1,6 @@
 import { Ref, modelOptions, prop } from '@typegoose/typegoose'
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
+import { CompanyModel } from 'src/company/models/company.model'
 import { UserModel } from 'src/user/models/user.model'
 import { ShiftNumber } from '../enums/shift-number.enum'
 import { Status } from '../enums/status.enum'
@@ -10,6 +11,9 @@ export interface DayModel extends Base {}
 export class DayModel extends TimeStamps {
 	@prop({ ref: () => UserModel })
 	owner: Ref<UserModel>
+
+	@prop({ ref: () => CompanyModel })
+	companyId: Ref<CompanyModel>
 
 	@prop({ required: true })
 	date: Date
